@@ -65,7 +65,7 @@ function Modal({
             <span aria-hidden>✕</span>
           </button>
         </div>
-        // scroll
+        {/**scrool */}
         <div className="p-4 overflow-y-auto">
           {children}
         </div>

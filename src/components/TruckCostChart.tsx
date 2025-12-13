@@ -33,6 +33,13 @@ const TruckCostChart: React.FC<TruckCostChartProps> = ({ summary }) => {
         data,
         tension: 0.2,
         pointRadius: 3,
+
+        borderColor: '#2563eb',        // azul
+        backgroundColor: '#2563eb',    // para puntos/leyenda
+        borderWidth: 3,
+
+        pointBackgroundColor: '#2563eb',
+        pointBorderColor: '#2563eb',
       },
     ],
   };
