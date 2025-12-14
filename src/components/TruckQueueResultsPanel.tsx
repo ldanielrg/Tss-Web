@@ -1,6 +1,10 @@
 import React from 'react';
 import { BarChart } from 'lucide-react';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import type { TruckQueueSummary, TruckTeamSize } from '../types/truckQueueSimulation';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 type Props = {
   summary: TruckQueueSummary | null;
@@ -109,7 +113,82 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, person
       <div className="text-xs text-gray-500">
         Nota: “Espera camión” es el costo por tiempo total de espera acumulado (promedio si N &gt; 1).
       </div>
-    </div>
+      {/* Gráfico de costos */}
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mt-6">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <BarChart className="w-5 h-5 text-purple-600" />
+          Comparativa de Costos Totales
+        </h3>
+        
+        <div className="w-full h-80 md:h-96 lg:h-[500px]">
+          {(() => {
+            const teamsToShow = [3, 4, 5, 6].filter((team) => {
+              if (personas === 'AUTO' || !personas) return true;
+              return team <= personas;
+            });
+            
+            const costos = teamsToShow.map(team => summary.porEquipo[team].costoTotal);
+            const maxCosto = Math.max(...costos);
+            const minCosto = Math.min(...costos);
+            const padding = (maxCosto - minCosto) * 0.1 || maxCosto * 0.1;
+            
+            const chartData = {
+              labels: teamsToShow.map(team => `${team} personas`),
+              datasets: [
+                {
+                  label: 'Costo Total (Bs.)',
+                  data: costos,
+                  backgroundColor: teamsToShow.map(team => 
+                    team === optimalTeam ? 'rgba(249, 115, 22, 0.7)' : 'rgba(59, 130, 246, 0.7)'
+                  ),
+                  borderColor: teamsToShow.map(team => 
+                    team === optimalTeam ? 'rgb(249, 115, 22)' : 'rgb(59, 130, 246)'
+                  ),
+                  borderWidth: 2,
+                }
+              ]
+            };
+
+            const options = {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top' as const,
+                },
+                title: {
+                  display: false,
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  min: Math.max(0, minCosto - padding),
+                  max: maxCosto + padding,
+                  ticks: {
+                    callback: function(value: any) {
+                      return 'Bs. ' + value.toFixed(2);
+                    }
+                  },
+                  title: {
+                    display: true,
+                    text: 'Monto en Bs.'
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Equipos'
+                  }
+                }
+              }
+            };
+
+            return <Bar data={chartData} options={options} />;
+          })()}
+        </div>
+      </div>    </div>
   );
 };
 
