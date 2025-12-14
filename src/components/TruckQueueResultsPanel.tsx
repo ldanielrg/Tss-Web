@@ -187,7 +187,57 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, person
             return <Bar data={chartData} options={options} />;
           })()}
         </div>
-      </div>    </div>
+      </div>
+
+      {/* Panel de Métricas de Desempeño */}
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mt-6">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <BarChart className="w-5 h-5 text-purple-600" />
+          Métricas de Desempeño por Equipo
+        </h3>
+
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-xs md:text-sm border">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="border px-1 md:px-2 py-2 text-xs md:text-sm">Equipo</th>
+                <th className="border px-1 md:px-2 py-2 text-xs md:text-sm">Camiones Atendidos</th>
+                <th className="border px-1 md:px-2 py-2 text-xs md:text-sm">Tiempo Total Espera (h)</th>
+                <th className="border px-1 md:px-2 py-2 text-xs md:text-sm">Tiempo Extra (h)</th>
+                <th className="border px-1 md:px-2 py-2 text-xs md:text-sm">Tiempo Operación (h)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const teamsToShow = [3, 4, 5, 6].filter((team) => {
+                  if (personas === 'AUTO' || !personas) return true;
+                  return team <= personas;
+                });
+
+                return teamsToShow.map((team) => {
+                  const metrics = summary.porEquipo[team];
+                  const best = team === optimalTeam;
+
+                  return (
+                    <tr key={team} className={best ? 'bg-orange-50' : ''}>
+                      <td className="border px-1 md:px-2 py-2 font-medium text-center">{team}</td>
+                      <td className="border px-1 md:px-2 py-2 text-center">{Math.floor(metrics.camionesServidos)}</td>
+                      <td className="border px-1 md:px-2 py-2 text-center">{(metrics.esperaTotalMin / 60).toFixed(2)} h</td>
+                      <td className="border px-1 md:px-2 py-2 text-center">{(metrics.tiempoExtraMin / 60).toFixed(2)} h</td>
+                      <td className="border px-1 md:px-2 py-2 text-center">{(metrics.operacionMin / 60).toFixed(2)} h</td>
+                    </tr>
+                  );
+                });
+              })()}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="text-xs text-gray-500 mt-4">
+          Nota: Las filas resaltadas en naranja corresponden al equipo óptimo ({optimalTeam} personas) con menor costo total.
+        </div>
+      </div>
+    </div>
   );
 };
 
