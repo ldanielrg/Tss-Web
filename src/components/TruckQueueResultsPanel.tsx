@@ -13,7 +13,6 @@ type Props = {
 };
 
 const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, personas }) => {
-  // Calcular equipo óptimo basándose en los equipos mostrados
   const getOptimalTeam = () => {
     if (!summary) return null;
     
@@ -65,7 +64,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, person
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <BarChart className="w-5 h-5 text-purple-600" />
-          Resultados Camiones (N = {summary.nTurnos})
+          Costos por Tamaño de quipo con  (N = {summary.nTurnos}) Turnos
         </h3>
 
         <div className="px-3 py-1 rounded bg-orange-50 text-orange-700 text-sm font-medium">
@@ -117,7 +116,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, person
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mt-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <BarChart className="w-5 h-5 text-purple-600" />
-          Comparativa de Costos Totales
+          Costos Totales por Tamaño de Equipo
         </h3>
         
         <div className="w-full h-80 md:h-96 lg:h-[500px]">

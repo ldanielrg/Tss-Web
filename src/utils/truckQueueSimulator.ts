@@ -1,6 +1,5 @@
 import type { TruckQueueCost, TruckQueueParams, TruckQueueSummary } from '../types/truckQueueSimulation';
 
-/** ===== Helpers tiempo (soporta HH:mm y HH:mm:ss) ===== */
 function parseHHMMSS(s: string): { h: number; m: number; sec: number } {
   const parts = s.trim().split(':').map(Number);
   const h = parts[0] ?? 0;
@@ -9,7 +8,6 @@ function parseHHMMSS(s: string): { h: number; m: number; sec: number } {
   return { h, m, sec };
 }
 
-/** Minutos desde horaInicio (cruza medianoche si corresponde) */
 function minutesFromStart(time: string, start: string): number {
   const t = parseHHMMSS(time);
   const s = parseHHMMSS(start);
@@ -26,7 +24,6 @@ function durationToMinutes(dur: string): number {
   return Math.round(t.h * 60 + t.m + t.sec / 60);
 }
 
-/** RNG semilla (LCG) */
 function makeLCG(seed: number) {
   let x = seed >>> 0;
   return () => {
@@ -35,7 +32,6 @@ function makeLCG(seed: number) {
   };
 }
 
-/** Transformada inversa discreta */
 function invDiscrete(u: number, values: number[], probs: number[]) {
   let acc = 0;
   for (let i = 0; i < values.length; i++) {
@@ -45,17 +41,11 @@ function invDiscrete(u: number, values: number[], probs: number[]) {
   return values[values.length - 1];
 }
 
-/** ===== Distribuciones (ajusta si tu enunciado tiene otros valores) =====
- *  - Camiones esperando al abrir: EXACTO del enunciado (0..3)
- *  - Interarribos: si ya tienes tu tabla oficial, reemplaza IA_T e IA_P
- *  - Servicio: EXACTO con tablas por equipo 3..6 que ya usabas
- */
-
 // Camiones esperando al abrir
 const INIT_TRUCKS = [0, 1, 2, 3];
 const INIT_P = [0.5, 0.25, 0.15, 0.1];
 
-// Interarribos (min) - EJEMPLO base (reemplázalo por tu tabla oficial si es distinta)
+// Intervalo de llegada (min) - (exacto)
 const IA_T = [20, 25, 30, 35, 40, 45, 50, 55, 60];
 const IA_P = [0.02, 0.08, 0.12, 0.25, 0.20, 0.15, 0.10, 0.05, 0.03];
 
@@ -81,8 +71,7 @@ function sampleService(u: number, team: number) {
     default: return invDiscrete(u, S3_T, S3_P);
   }
 }
-
-/** Simula una noche para un equipo fijo (FIFO, 1 servidor, break con regla del enunciado) */
+// Simulación de una noche
 function simulateOneNight(params: TruckQueueParams, team: number, seed: number): TruckQueueCost {
   const rnd = makeLCG(seed);
 
@@ -122,9 +111,6 @@ function simulateOneNight(params: TruckQueueParams, team: number, seed: number):
   for (const arrival of arrivals) {
     let start = Math.max(serverFreeAt, arrival);
 
-    // Regla break:
-    // - si a la hora del break están libres -> pausa 30 min
-    // - si están ocupados, se toma al terminar ese camión (break diferido)
     if (!breakTaken) {
       if (serverFreeAt <= breakStart && start >= breakStart) {
         // libres a la hora del break
@@ -175,7 +161,7 @@ function simulateOneNight(params: TruckQueueParams, team: number, seed: number):
   };
 }
 
-/** Promedio de N noches */
+// Simulación de muchas noches y promedio
 function simulateMany(params: TruckQueueParams, team: number, n: number, seedBase: number): TruckQueueCost {
   let acc: TruckQueueCost = {
     salarioNormal: 0,

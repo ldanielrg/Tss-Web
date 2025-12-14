@@ -4,7 +4,6 @@ export type TruckQueueParams = {
   limiteLlegadas: string;           // "07:00:00"
   horaBreak: string;                // "03:00:00"
   duracionBreak: string;            // "00:30:00"
-  //nPersonas: number;                // 3-6
 
   salarioHora: number;              // 25
   salarioExtraHora: number;         // 37.5

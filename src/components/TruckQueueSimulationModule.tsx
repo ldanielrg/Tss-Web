@@ -4,7 +4,6 @@ import type { TruckQueueParams, TruckQueueSummary } from '../types/truckQueueSim
 import { simulateTruckQueue } from '../utils/truckQueueSimulator';
 
 type Props = {
-  /** devuelve el resumen al padre para pintarlo donde quiera */
   onSimulated: (summary: TruckQueueSummary, personas: TruckQueueParams['personas']) => void;
   isSimulating: boolean;
   setIsSimulating: (v: boolean) => void;
@@ -16,7 +15,6 @@ const TruckQueueSimulationModule: React.FC<Props> = ({ onSimulated, isSimulating
     limiteLlegadas: '07:00:00',
     horaBreak: '03:00:00',
     duracionBreak: '00:30:00',
-    //nPersonas: 3,
     salarioHora: 25,
     salarioExtraHora: 37.5,
     costoEsperaCamionHora: 100,
@@ -92,7 +90,7 @@ const TruckQueueSimulationModule: React.FC<Props> = ({ onSimulated, isSimulating
           />
         </div>
 
-        {/* ✅ Selección de equipo */}
+        {/*Selección de equipo */}
         <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
             Número de personas (equipo)
