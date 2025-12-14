@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart } from 'lucide-react';
+import { Clock, Users, Package, Play, BarChart, Truck } from 'lucide-react';
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 
 const SimulationModule: React.FC = () => {
-  const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory'>('queue');
+  const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory' | 'camiones'>('queue');
   const [queueParams, setQueueParams] = useState({
     arrivalRate: 2,
     serviceRate: 3,
@@ -100,7 +100,7 @@ const SimulationModule: React.FC = () => {
       {/* Selector de problema */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Seleccionar Problema de Simulación</h3>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <button
             onClick={() => setSelectedProblem('queue')}
             className={`p-4 rounded-lg border-2 transition-colors ${
@@ -131,6 +131,23 @@ const SimulationModule: React.FC = () => {
               <div className="text-left">
                 <h4 className="font-medium">Gestión de Inventarios</h4>
                 <p className="text-sm text-gray-600">Sistema EOQ estocástico</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setSelectedProblem('camiones')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'camiones'
+                ? 'border-orange-500 bg-orange-50 text-orange-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Truck className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Sistema de Colas Camiones</h4>
+                <p className="text-sm text-gray-600">Simulación de despacho de vehículos</p>
               </div>
             </div>
           </button>
