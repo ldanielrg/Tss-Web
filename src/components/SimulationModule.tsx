@@ -19,10 +19,10 @@ const SimulationModule: React.FC = () => {
   });
   
   const [truckParams, setTruckParams] = useState({
-    horaInicio: '23:00:00',
-    limiteLlegadas: '07:00:00',
-    horaBreak: '03:00:00',
-    duracionBreak: '00:30:00',
+    horaInicio: '23:00',
+    limiteLlegadas: '07:00',
+    horaBreak: '03:00',
+    duracionBreak: '00:30',
     personas: 3,
     salarioHora: 25.0,
     salarioExtraHora: 37.5,
