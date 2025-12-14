@@ -1,8 +1,10 @@
+export type TruckTeamSize = 3 | 4 | 5 | 6;
 export type TruckQueueParams = {
   horaInicio: string;               // "23:00:00"
   limiteLlegadas: string;           // "07:00:00"
   horaBreak: string;                // "03:00:00"
   duracionBreak: string;            // "00:30:00"
+  //nPersonas: number;                // 3-6
 
   salarioHora: number;              // 25
   salarioExtraHora: number;         // 37.5
@@ -11,6 +13,7 @@ export type TruckQueueParams = {
 
   duracionJornadaHoras: number;     // 8
   nTurnos: number;                  // 60
+  personas: 'AUTO' | TruckTeamSize;
 };
 
 export type TruckQueueCost = {

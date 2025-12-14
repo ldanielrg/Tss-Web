@@ -5,7 +5,7 @@ import { simulateTruckQueue } from '../utils/truckQueueSimulator';
 
 type Props = {
   /** devuelve el resumen al padre para pintarlo donde quiera */
-  onSimulated: (summary: TruckQueueSummary) => void;
+  onSimulated: (summary: TruckQueueSummary, personas: TruckQueueParams['personas']) => void;
   isSimulating: boolean;
   setIsSimulating: (v: boolean) => void;
 };
@@ -16,12 +16,14 @@ const TruckQueueSimulationModule: React.FC<Props> = ({ onSimulated, isSimulating
     limiteLlegadas: '07:00:00',
     horaBreak: '03:00:00',
     duracionBreak: '00:30:00',
+    //nPersonas: 3,
     salarioHora: 25,
     salarioExtraHora: 37.5,
     costoEsperaCamionHora: 100,
     costoOperacionAlmacenHora: 500,
     duracionJornadaHoras: 8,
     nTurnos: 60,
+    personas: 'AUTO',
   });
 
   const promptTime = (label: string, value: string, key: keyof TruckQueueParams) => {
@@ -33,7 +35,7 @@ const TruckQueueSimulationModule: React.FC<Props> = ({ onSimulated, isSimulating
     setIsSimulating(true);
     setTimeout(() => {
       const summary = simulateTruckQueue(params);
-      onSimulated(summary);
+      onSimulated(summary, params.personas);
       setIsSimulating(false);
     }, 200);
   };
@@ -89,6 +91,30 @@ const TruckQueueSimulationModule: React.FC<Props> = ({ onSimulated, isSimulating
             onClick={() => promptTime('Duración Break', params.duracionBreak, 'duracionBreak')}
           />
         </div>
+
+        {/* ✅ Selección de equipo */}
+        <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+            Número de personas (equipo)
+        </label>
+        <select
+            value={params.personas}
+            onChange={(e) =>
+            setParams((prev) => ({
+                ...prev,
+                personas: e.target.value === 'AUTO' ? 'AUTO' : (parseInt(e.target.value, 10) as 3 | 4 | 5 | 6),
+            }))
+            }
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+        >
+            <option value="AUTO">Seleccionar (3 a 6) empleados</option>
+            <option value="3">3 personas</option>
+            <option value="4">4 personas</option>
+            <option value="5">5 personas</option>
+            <option value="6">6 personas</option>
+        </select>
+        </div>
+
 
         <div className="grid grid-cols-2 gap-3">
           <div>

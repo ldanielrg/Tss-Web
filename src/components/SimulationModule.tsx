@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart } from 'lucide-react';
+import { Clock, Users, Package, Play, BarChart, Truck } from 'lucide-react'; //AGREGUE YO
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
+//importar componentes para camiones
+import TruckQueueSimulationModule from './TruckQueueSimulationModule';
+import TruckQueueResultsPanel from './TruckQueueResultsPanel';
+import type { TruckQueueSummary } from '../types/truckQueueSimulation';
 
 const SimulationModule: React.FC = () => {
-  const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory'>('queue');
+  const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory' | 'camiones'>('queue');
   const [queueParams, setQueueParams] = useState({
     arrivalRate: 2,
     serviceRate: 3,
@@ -20,6 +24,9 @@ const SimulationModule: React.FC = () => {
 
   const [results, setResults] = useState<any[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
+  //Estado para resultados de camiones
+  const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
+  const [truckPersonas, setTruckPersonas] = useState<'AUTO' | 3 | 4 | 5 | 6>('AUTO');
 
   const runQueueSimulation = () => {
     setIsSimulating(true);
@@ -41,13 +48,12 @@ const SimulationModule: React.FC = () => {
     
     // Simulación básica de inventarios
     setTimeout(() => {
-      const events = [];
+      const events: any[] = [];
       let inventory = inventoryParams.orderQuantity;
       let time = 0;
       
-      // Generar eventos de demanda
       for (let i = 0; i < 20; i++) {
-        time += Math.random() * 2 + 1; // Tiempo entre demandas
+        time += Math.random() * 2 + 1;
         const demand = Math.floor(Math.random() * inventoryParams.demand) + 1;
         inventory -= demand;
         
@@ -58,7 +64,6 @@ const SimulationModule: React.FC = () => {
           systemState: { inventario: Math.max(inventory, 0) }
         });
 
-        // Revisar si necesita reordenar
         if (inventory <= inventoryParams.orderPoint) {
           events.push({
             time: time.toFixed(2),
@@ -67,7 +72,6 @@ const SimulationModule: React.FC = () => {
             systemState: { inventario: Math.max(inventory, 0), pendiente: inventoryParams.orderQuantity }
           });
           
-          // Llegada de la orden
           time += inventoryParams.leadTime;
           inventory += inventoryParams.orderQuantity;
           
@@ -100,7 +104,7 @@ const SimulationModule: React.FC = () => {
       {/* Selector de problema */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Seleccionar Problema de Simulación</h3>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4"> 
           <button
             onClick={() => setSelectedProblem('queue')}
             className={`p-4 rounded-lg border-2 transition-colors ${
@@ -131,6 +135,24 @@ const SimulationModule: React.FC = () => {
               <div className="text-left">
                 <h4 className="font-medium">Gestión de Inventarios</h4>
                 <p className="text-sm text-gray-600">Sistema EOQ estocástico</p>
+              </div>
+            </div>
+          </button>
+
+          {/*Botón camiones*/}
+          <button
+            onClick={() => setSelectedProblem('camiones')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'camiones'
+                ? 'border-orange-500 bg-orange-50 text-orange-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Truck className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Colas de Camiones</h4>
+                <p className="text-sm text-gray-600">Descarga nocturna y costos</p>
               </div>
             </div>
           </button>
@@ -214,7 +236,6 @@ const SimulationModule: React.FC = () => {
                 <span>{isSimulating ? 'Simulando...' : 'Ejecutar Simulación'}</span>
               </button>
 
-              {/* Información teórica */}
               <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-medium text-blue-900 mb-2">Teoría M/M/1</h4>
                 <div className="text-sm text-blue-800 space-y-1">
@@ -312,11 +333,26 @@ const SimulationModule: React.FC = () => {
               </button>
             </div>
           )}
+
+          {/*Panel de parámetros de camiones*/}
+          {selectedProblem === 'camiones' && (
+            <TruckQueueSimulationModule
+              isSimulating={isSimulating}
+              setIsSimulating={setIsSimulating}
+              onSimulated={(summary, personas) => {
+                setTruckSummary(summary);
+                setTruckPersonas(personas);
+              }}
+            />
+          )}
         </div>
 
         {/* Panel de resultados */}
         <div className="lg:col-span-2 space-y-6">
-          {results.length > 0 && (
+          {selectedProblem === 'camiones' && (
+            <TruckQueueResultsPanel summary={truckSummary} isSimulating={isSimulating} personas={truckPersonas} />
+          )}
+          {selectedProblem !== 'camiones' && results.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
                 <BarChart className="w-5 h-5 text-purple-600" />
@@ -362,7 +398,7 @@ const SimulationModule: React.FC = () => {
             </div>
           )}
 
-          {results.length === 0 && !isSimulating && (
+          {selectedProblem !== 'camiones' && results.length === 0 && !isSimulating && (
             <div className="bg-white p-12 rounded-lg shadow-md text-center">
               <div className="text-gray-400 mb-4">
                 <Clock className="w-16 h-16 mx-auto" />

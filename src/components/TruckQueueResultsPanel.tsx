@@ -1,13 +1,37 @@
 import React from 'react';
 import { BarChart } from 'lucide-react';
-import type { TruckQueueSummary } from '../types/truckQueueSimulation';
+import type { TruckQueueSummary, TruckTeamSize } from '../types/truckQueueSimulation';
 
 type Props = {
   summary: TruckQueueSummary | null;
   isSimulating: boolean;
+  personas?: 'AUTO' | TruckTeamSize;
 };
 
-const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
+const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, personas }) => {
+  // Calcular equipo óptimo basándose en los equipos mostrados
+  const getOptimalTeam = () => {
+    if (!summary) return null;
+    
+    const teamsToShow = [3, 4, 5, 6].filter((team) => {
+      if (personas === 'AUTO' || !personas) return true;
+      return team <= personas;
+    });
+    
+    let optimalTeam = teamsToShow[0];
+    let minCost = summary.porEquipo[teamsToShow[0]].costoTotal;
+    
+    for (const team of teamsToShow) {
+      if (summary.porEquipo[team].costoTotal < minCost) {
+        minCost = summary.porEquipo[team].costoTotal;
+        optimalTeam = team;
+      }
+    }
+    
+    return optimalTeam;
+  };
+  
+  const optimalTeam = getOptimalTeam();
   if (isSimulating) {
     return (
       <div className="bg-white p-12 rounded-lg shadow-md text-center">
@@ -41,7 +65,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
         </h3>
 
         <div className="px-3 py-1 rounded bg-orange-50 text-orange-700 text-sm font-medium">
-          Equipo óptimo: {summary.equipoOptimo} personas
+          Equipo óptimo: {optimalTeam} personas
         </div>
       </div>
 
@@ -58,21 +82,26 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
             </tr>
           </thead>
           <tbody>
-            {[3, 4, 5, 6].map((team) => {
-              const c = summary.porEquipo[team];
-              const best = team === summary.equipoOptimo;
+            {[3, 4, 5, 6]
+              .filter((team) => {
+                if (personas === 'AUTO' || !personas) return true;
+                return team <= personas;
+              })
+              .map((team) => {
+                const c = summary.porEquipo[team];
+                const best = team === optimalTeam;
 
-              return (
-                <tr key={team} className={best ? 'bg-orange-50' : ''}>
-                  <td className="border px-2 py-2 font-medium">{team}</td>
-                  <td className="border px-2 py-2">{c.salarioNormal.toFixed(2)}</td>
-                  <td className="border px-2 py-2">{c.salarioExtra.toFixed(2)}</td>
-                  <td className="border px-2 py-2">{c.costoEspera.toFixed(2)}</td>
-                  <td className="border px-2 py-2">{c.costoOperacion.toFixed(2)}</td>
-                  <td className="border px-2 py-2 font-semibold">{c.costoTotal.toFixed(2)}</td>
-                </tr>
-              );
-            })}
+                return (
+                  <tr key={team} className={best ? 'bg-orange-50' : ''}>
+                    <td className="border px-2 py-2 font-medium">{team}</td>
+                    <td className="border px-2 py-2">{c.salarioNormal.toFixed(2)}</td>
+                    <td className="border px-2 py-2">{c.salarioExtra.toFixed(2)}</td>
+                    <td className="border px-2 py-2">{c.costoEspera.toFixed(2)}</td>
+                    <td className="border px-2 py-2">{c.costoOperacion.toFixed(2)}</td>
+                    <td className="border px-2 py-2 font-semibold">{c.costoTotal.toFixed(2)}</td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
