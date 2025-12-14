@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck } from 'lucide-react';
+import { Clock, Users, Package, Play, BarChart } from 'lucide-react';
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 
 const SimulationModule: React.FC = () => {
-  const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory' | 'camiones'>('queue');
+  const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory'>('queue');
   const [queueParams, setQueueParams] = useState({
     arrivalRate: 2,
     serviceRate: 3,
@@ -16,19 +16,6 @@ const SimulationModule: React.FC = () => {
     leadTime: 2,
     orderPoint: 10,
     orderQuantity: 20
-  });
-  
-  const [truckParams, setTruckParams] = useState({
-    horaInicio: '23:00:00',
-    limiteLlegadas: '07:00:00',
-    horaBreak: '03:00:00',
-    duracionBreak: '00:30:00',
-    personas: 3,
-    salarioHora: 25.0,
-    salarioExtraHora: 37.5,
-    costoEsperaCamionHora: 100.0,
-    costoOperacionAlmacenHora: 500.0,
-    duracionJornadaHoras: 8
   });
 
   const [results, setResults] = useState<any[]>([]);
@@ -98,41 +85,6 @@ const SimulationModule: React.FC = () => {
     }, 500);
   };
 
-  // Simulación básica CAMIONES ####  BORRAR ESTO Y PONERLO EN OTRO LADO####
-  const runTruckSimulation = () => {
-    setIsSimulating(true);
-    
-    // Simulación básica de colas de camiones
-    setTimeout(() => {
-      const events = [];
-      let time = 0;
-      
-      // Generar eventos de llegada de camiones
-      for (let i = 0; i < 15; i++) {
-        time += Math.random() * 0.5 + 0.2; // Tiempo entre llegadas
-        const tiempoEspera = Math.random() * 2;
-        
-        events.push({
-          time: time.toFixed(2),
-          type: 'Llegada',
-          description: `Camión ${i + 1} llega al almacén`,
-          systemState: { camionesPendientes: Math.max(15 - i, 0), personas: truckParams.personas }
-        });
-        
-        time += tiempoEspera;
-        events.push({
-          time: time.toFixed(2),
-          type: 'Descarga',
-          description: `Camión ${i + 1} siendo descargado`,
-          systemState: { camionesPendientes: Math.max(14 - i, 0) }
-        });
-      }
-      
-      setResults(events);
-      setIsSimulating(false);
-    }, 500);
-  };
-
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6 rounded-lg">
@@ -148,7 +100,7 @@ const SimulationModule: React.FC = () => {
       {/* Selector de problema */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Seleccionar Problema de Simulación</h3>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           <button
             onClick={() => setSelectedProblem('queue')}
             className={`p-4 rounded-lg border-2 transition-colors ${
@@ -179,23 +131,6 @@ const SimulationModule: React.FC = () => {
               <div className="text-left">
                 <h4 className="font-medium">Gestión de Inventarios</h4>
                 <p className="text-sm text-gray-600">Sistema EOQ estocástico</p>
-              </div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setSelectedProblem('camiones')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'camiones'
-                ? 'border-orange-500 bg-orange-50 text-orange-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Truck className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Sistema de Colas Camiones</h4>
-                <p className="text-sm text-gray-600">Simulación de despacho de vehículos</p>
               </div>
             </div>
           </button>
@@ -371,194 +306,6 @@ const SimulationModule: React.FC = () => {
                 onClick={runInventorySimulation}
                 disabled={isSimulating}
                 className="w-full mt-6 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-              >
-                <Play className="w-4 h-4" />
-                <span>{isSimulating ? 'Simulando...' : 'Ejecutar Simulación'}</span>
-              </button>
-            </div>
-          )}
-
-          {selectedProblem === 'camiones' && (
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                <Truck className="w-5 h-5 text-orange-600" />
-                <span>Parámetros de Simulacion - Camiones</span>
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hora Inicio (p.m.)
-                  </label>
-                  <input
-                    type="text"
-                    value={truckParams.horaInicio }
-                    placeholder="HH:mm:ss"
-                    readOnly
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
-                    onClick={() => {
-                      const time = prompt('Ingresa la hora (HH:mm):', truckParams.horaInicio);
-                      if (time) setTruckParams(prev => ({ ...prev, horaInicio: time }));
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Límite de Llegadas (a.m.)
-                  </label>
-                  <input
-                    type="text"
-                    value={truckParams.limiteLlegadas}
-                    placeholder="HH:mm:ss"
-                    readOnly
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
-                    onClick={() => {
-                      const time = prompt('Ingresa la hora (HH:mm):', truckParams.limiteLlegadas);
-                      if (time) setTruckParams(prev => ({ ...prev, limiteLlegadas: time }));
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hora Break (a.m.)
-                  </label>
-                  <input
-                    type="text"
-                    value={truckParams.horaBreak }
-                    placeholder="HH:mm:ss"
-                    readOnly
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
-                    onClick={() => {
-                      const time = prompt('Ingresa la hora (HH:mm):', truckParams.horaBreak);
-                      if (time) setTruckParams(prev => ({ ...prev, horaBreak: time }));
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Duración de Break (min.)
-                  </label>
-                  <input
-                    type="text"
-                    value={truckParams.duracionBreak }
-                    placeholder="HH:mm:ss"
-                    readOnly
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
-                    onClick={() => {
-                      const time = prompt('Ingresa la duración (HH:mm):', truckParams.duracionBreak);
-                      if (time) setTruckParams(prev => ({ ...prev, duracionBreak: time }));
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Personas (3-6)
-                  </label>
-                  <select
-                    value={truckParams.personas}
-                    onChange={(e) => setTruckParams(prev => ({
-                      ...prev,
-                      personas: parseInt(e.target.value)
-                    }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  >
-                    <option value={3}>3 personas</option>
-                    <option value={4}>4 personas</option>
-                    <option value={5}>5 personas</option>
-                    <option value={6}>6 personas</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Salario por Hora (Bs.)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={truckParams.salarioHora}
-                    onChange={(e) => setTruckParams(prev => ({
-                      ...prev,
-                      salarioHora: parseFloat(e.target.value) || 0
-                    }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Salario Hora Extra (Bs.)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={truckParams.salarioExtraHora}
-                    onChange={(e) => setTruckParams(prev => ({
-                      ...prev,
-                      salarioExtraHora: parseFloat(e.target.value) || 0
-                    }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Costo Espera Camión/Hora (Bs.)
-                  </label>
-                  <input
-                    type="number"
-                    step="10"
-                    value={truckParams.costoEsperaCamionHora}
-                    onChange={(e) => setTruckParams(prev => ({
-                      ...prev,
-                      costoEsperaCamionHora: parseFloat(e.target.value) || 0
-                    }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Costo Operación Almacén/Hora (Bs.)
-                  </label>
-                  <input
-                    type="number"
-                    step="10"
-                    value={truckParams.costoOperacionAlmacenHora}
-                    onChange={(e) => setTruckParams(prev => ({
-                      ...prev,
-                      costoOperacionAlmacenHora: parseFloat(e.target.value) || 0
-                    }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Duración Jornada (Horas)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="0.5"
-                    value={truckParams.duracionJornadaHoras}
-                    onChange={(e) => setTruckParams(prev => ({
-                      ...prev,
-                      duracionJornadaHoras: parseFloat(e.target.value) || 1
-                    }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <button
-                onClick={runTruckSimulation}
-                disabled={isSimulating}
-                className="w-full mt-6 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
               >
                 <Play className="w-4 h-4" />
                 <span>{isSimulating ? 'Simulando...' : 'Ejecutar Simulación'}</span>
