@@ -19,10 +19,10 @@ const SimulationModule: React.FC = () => {
   });
   
   const [truckParams, setTruckParams] = useState({
-    horaInicio: '23:00',
-    limiteLlegadas: '07:00',
-    horaBreak: '03:00',
-    duracionBreak: '00:30',
+    horaInicio: '23:00:00',
+    limiteLlegadas: '07:00:00',
+    horaBreak: '03:00:00',
+    duracionBreak: '00:30:00',
     personas: 3,
     salarioHora: 25.0,
     salarioExtraHora: 37.5,
@@ -382,7 +382,7 @@ const SimulationModule: React.FC = () => {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
                 <Truck className="w-5 h-5 text-orange-600" />
-                <span>Parámetros de Camiones</span>
+                <span>Parámetros de Simulacion - Camiones</span>
               </h3>
 
               <div className="space-y-4">
@@ -392,7 +392,7 @@ const SimulationModule: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={truckParams.horaInicio + ':00'}
+                    value={truckParams.horaInicio }
                     placeholder="HH:mm:ss"
                     readOnly
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
@@ -409,7 +409,7 @@ const SimulationModule: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={truckParams.limiteLlegadas + ':00'}
+                    value={truckParams.limiteLlegadas}
                     placeholder="HH:mm:ss"
                     readOnly
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
@@ -426,7 +426,7 @@ const SimulationModule: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={truckParams.horaBreak + ':00'}
+                    value={truckParams.horaBreak }
                     placeholder="HH:mm:ss"
                     readOnly
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
@@ -443,7 +443,7 @@ const SimulationModule: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={truckParams.duracionBreak + ':00'}
+                    value={truckParams.duracionBreak }
                     placeholder="HH:mm:ss"
                     readOnly
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 cursor-pointer"
