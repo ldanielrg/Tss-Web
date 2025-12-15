@@ -4,8 +4,8 @@ import type { InventorySimMonthRow } from '../types/inventorySimulation';
 type Props = {
   tabla: InventorySimMonthRow[];
   R: number;
-  q: number;              // ✅ nuevo: para mostrar bracket q
-  yMaxFixed?: number;     // ✅ nuevo: límite superior fijo del eje Y
+  q: number;
+  yMaxFixed?: number;
 };
 
 type Point = { x: number; y: number };
@@ -23,7 +23,6 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
   const { points, yMin, yMax, orders } = useMemo(() => {
     if (!tabla.length) return { points: [] as Point[], yMin: 0, yMax: 1, orders: [] as number[] };
 
-    // Inventario neto = inventario - backlog
     const netStart = tabla[0].inventarioInicial - tabla[0].backlogInicial;
     const pts: Point[] = [{ x: 0, y: netStart }];
 
@@ -36,17 +35,15 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
 
     const ys = pts.map(p => p.y).concat([0, R, q]);
 
-    // ✅ yMax: fijo si viene; si no, auto
     let maxAuto = Math.max(...ys);
     let max = yMaxFixed ?? maxAuto;
 
-    // yMin: permitir negativos (faltante) y dejar algo de margen
     let min = Math.min(...ys);
     min = Math.min(min, 0);
 
     const pad = Math.max(10, (max - min) * 0.10);
     min -= pad;
-    max += pad * 0.15; // poquito arriba
+    max += pad * 0.15;
 
     return { points: pts, yMin: min, yMax: max, orders: orderMonths };
   }, [tabla, R, q, yMaxFixed]);
@@ -54,8 +51,8 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
   if (!points.length) return null;
 
   const W = 900;
-  const H = 340; // un poco más alto para etiquetas
-  const padL = 70; // ✅ más espacio para bracket q
+  const H = 340;
+  const padL = 70;
   const padR = 20;
   const padT = 20;
   const padB = 45;
@@ -71,7 +68,6 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
 
   const poly = points.map(p => `${sx(p.x)},${sy(p.y)}`).join(' ');
 
-  // ticks Y: centrados en 0..yMaxFixed (y negativos si existen)
   const step = niceStep(yMax - yMin);
   const yTickStart = Math.floor(yMin / step) * step;
   const yTicks: number[] = [];
@@ -79,12 +75,16 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
 
   const xTicks = Array.from({ length: xMax + 1 }, (_, i) => i);
 
-  // ✅ bracket q en el lado izquierdo
-  const bx = padL - 32;          // posición x del bracket
-  const cap = 10;               // ancho de “capita”
+  // Bracket q
+  const bx = padL - 32;
+  const cap = 10;
   const y0 = sy(0);
   const yq = sy(q);
   const yMid = (y0 + yq) / 2;
+
+  // ✅ posición de textos "Orden X" debajo de la línea R, con clamp para no salirse
+  const yR = sy(R);
+  const yOrderText = Math.min(yR + 16, H - padB - 6);
 
   return (
     <div className="w-full">
@@ -123,7 +123,7 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
         <line x1={padL} x2={W - padR} y1={sy(R)} y2={sy(R)} stroke="#F59E0B" strokeWidth={2} />
         <text x={W - padR} y={sy(R) - 6} textAnchor="end" fontSize="10" fill="#B45309">R = {R}</text>
 
-        {/* ✅ Bracket de q (como libro) */}
+        {/* Bracket de q */}
         <line x1={bx} x2={bx} y1={y0} y2={yq} stroke="#111827" strokeWidth={2} />
         <line x1={bx - cap} x2={bx + cap} y1={y0} y2={y0} stroke="#111827" strokeWidth={2} />
         <line x1={bx - cap} x2={bx + cap} y1={yq} y2={yq} stroke="#111827" strokeWidth={2} />
@@ -137,11 +137,11 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
           <circle key={`pt-${idx}`} cx={sx(p.x)} cy={sy(p.y)} r={3} fill="#2563EB" />
         ))}
 
-        {/* Marcas de orden */}
+        {/* ✅ Marcas de orden: texto DEBAJO de la línea R */}
         {orders.map((m, idx) => (
           <g key={`ord-${m}-${idx}`}>
             <circle cx={sx(m)} cy={sy(R)} r={4} fill="#F59E0B" />
-            <text x={sx(m) + 6} y={sy(R) - 6} fontSize="10" fill="#B45309">
+            <text x={sx(m)} y={yOrderText} fontSize="10" fill="#B45309" textAnchor="middle">
               Orden {idx + 1}
             </text>
           </g>
