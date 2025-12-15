@@ -8,7 +8,7 @@ import type {
   InventorySimulationSummary,
 } from '../types/inventorySimulation';
 
-/** RNG con semilla (LCG) */
+//generador de numeros aleatorios
 function makeLCG(seed: number) {
   let x = seed >>> 0;
   return () => {
@@ -17,7 +17,7 @@ function makeLCG(seed: number) {
   };
 }
 
-/** Inversa discreta usando CDF */
+// funcion inversa para distribucion discreta
 function invDiscrete(u: number, values: number[], cdf: number[]) {
   for (let i = 0; i < cdf.length; i++) {
     if (u <= cdf[i] + 1e-12) return values[i];
@@ -25,13 +25,14 @@ function invDiscrete(u: number, values: number[], cdf: number[]) {
   return values[values.length - 1];
 }
 
-/** Tablas (del libro / enunciado) */
+// demanda mensual
 export const DEMAND_VALUES = [
   35, 36, 37, 38, 39, 40, 41, 42, 43,
   44, 45, 46, 47, 48, 49, 50, 51, 52,
   53, 54, 55, 56, 57, 58, 59, 60
 ];
 
+// CDF acumulada
 export const DEMAND_CDF = [
   0.01, 0.025, 0.045, 0.065, 0.087, 0.11, 0.135, 0.162, 0.19,
   0.219, 0.254, 0.299, 0.359, 0.424, 0.494, 0.574, 0.649, 0.719,
@@ -41,6 +42,7 @@ export const DEMAND_CDF = [
 export const LT_VALUES = [1, 2, 3];
 export const LT_CDF = [0.3, 0.7, 1.0];
 
+// factores estacionales por mes
 export const SEASONAL: Record<number, number> = {
   1: 1.2,
   2: 1.0,
@@ -60,15 +62,6 @@ function seasonalFactor(month: number) {
   return SEASONAL[month] ?? 1.0;
 }
 
-/**
- * 1 corrida (modo libro):
- * - Backorders (faltante se acumula)
- * - Solo 1 orden pendiente
- * - Llegada: mesPedido + LT + 1 (llega al INICIO del mes)
- * - Inventario promedio:
- *    - sin faltante: (Ini+Fin)/2
- *    - con faltante: Ini^2/(2*Demanda)
- */
 export function simulateInventoryRun(params: InventorySimParams, seed: number): InventorySimRunResult {
   const rnd = makeLCG(seed);
   const meses = Math.max(1, Math.floor(params.mesesSimulacion));
@@ -193,7 +186,6 @@ export function simulateInventoryRun(params: InventorySimParams, seed: number): 
   return { params, tabla, costos };
 }
 
-/** Grid search */
 export function gridSearchInventory(params: InventoryGridSearchParams): InventorySimulationSummary {
   const corridas = Math.max(1, Math.floor(params.corridas));
   const baseSeed = (params.baseSeed ?? 123456789) >>> 0;

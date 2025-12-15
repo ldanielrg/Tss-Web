@@ -118,7 +118,7 @@ function simulateOneNight(params: TruckQueueParams, team: number, seed: number):
         breakTaken = true;
         start = Math.max(serverFreeAt, arrival);
       } else if (serverFreeAt >= breakStart) {
-        // ocupados y terminan después -> descanso diferido al terminar
+        // ya paso el break
         serverFreeAt = serverFreeAt + breakDur;
         breakTaken = true;
         start = Math.max(serverFreeAt, arrival);
