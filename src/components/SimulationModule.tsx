@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck, Divide } from 'lucide-react'; // AGREGUE YO
+import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server  } from 'lucide-react'; // AGREGUE YO
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 import { Navbar } from './layout/Navbar';
@@ -15,9 +15,13 @@ import InventorySimulationModule from './InventorySimulationModule'; // AGREGUE 
 import InventoryResultsPanel from './InventoryResultsPanel'; // AGREGUE YO
 import type { InventorySimulationSummary } from '../types/inventorySimulation'; // AGREGUE YO
 
+//Servicios
+import ServiceSystemsModule from './ServiceSystemsModule';
+
+
 const SimulationModule: React.FC = () => {
   const [selectedProblem, setSelectedProblem] = useState<
-    'queue' | 'inventory' | 'camiones' | 'inventoryRQ'
+    'queue' | 'inventory' | 'camiones' | 'inventoryRQ' | 'serviceSystems'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -192,16 +196,38 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
 
+          {/* Botón Servicios */}
+          <button
+            onClick={() => setSelectedProblem('serviceSystems')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'serviceSystems'
+                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Server className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Sistemas de Servicio</h4>
+                <p className="text-sm text-gray-600">Serie / Banco / Estacionamiento</p>
+              </div>
+            </div>
+          </button>
 
-          <Navbar />
+
+
         </div>
+        <Navbar />
       </div>
 
-    {!selectedProblem  ? (
+    {selectedProblem === null ? (
       <div className="bg-white p-6 rounded-lg shadow-md">
-      <Outlet />
+        <Outlet />
       </div>
+    ) : selectedProblem === 'serviceSystems' ? (
+      <ServiceSystemsModule />
     ) : (
+    
 
       <div className= "grid lg:grid-cols-3 gap-6">
         <div className="space-y-4">

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Play, Clock } from 'lucide-react';
+import { Play, Clock, Server } from 'lucide-react';
 import Tooltip from './Tooltip';
 import ServiceSystemsChart from './ServiceSystemsChart';
 import {
@@ -114,8 +114,8 @@ export default function ServiceSystemsModule() {
         <div className="space-y-4">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <span className="text-indigo-600 font-bold">S</span>
+              <div className="w-5 h-5 rounded-lg flex items-center justify-center">
+                <Server className="w-6 h-6 text-indigo-600" />
               </div>
               <div className="text-left">
                 <h3 className="text-lg font-semibold">Seleccionar Sistema</h3>
@@ -167,8 +167,8 @@ export default function ServiceSystemsModule() {
               </button>
               <hr className="my-4" />
               <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <span className="text-indigo-600 font-bold">S</span>
+              <div className="w-5 h-5 rounded-lg flex items-center justify-center">
+                <Server className="w-6 h-6 text-indigo-600" />
               </div>
               <div className="text-left">
                 <h3 className="text-lg font-semibold">Parámetros de Sistema de Servicio</h3>
