@@ -17,7 +17,6 @@ const InventorySimulationModule: React.FC<Props> = ({ onSimulated, isSimulating,
     costoFaltante: 50,
     mesesSimulacion: 12,
 
-    // Experimento (ajusta a lo que te pidan)
     qMin: 50,
     qMax: 200,
     qStep: 10,
@@ -26,7 +25,8 @@ const InventorySimulationModule: React.FC<Props> = ({ onSimulated, isSimulating,
     rMax: 100,
     rStep: 5,
 
-    corridas: 200, // puedes subir a 500/1000 si tu PC aguanta
+    corridas: 200,
+    baseSeed: 123456789, // reproducible
   });
 
   const run = () => {
@@ -42,10 +42,9 @@ const InventorySimulationModule: React.FC<Props> = ({ onSimulated, isSimulating,
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
         <Package className="w-5 h-5 text-amber-600" />
-        <span>Parámetros - Inventario (R, q)</span>
+        <span>Parámetros - Inventario (q, R)</span>
       </h3>
 
-      {/* Parámetros base (tu tabla) */}
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Inventario inicial</label>
@@ -102,7 +101,6 @@ const InventorySimulationModule: React.FC<Props> = ({ onSimulated, isSimulating,
           </div>
         </div>
 
-        {/* Experimento q y R */}
         <div className="border-t pt-4">
           <h4 className="font-medium text-gray-900 mb-3">Experimento (búsqueda de q y R)</h4>
 
@@ -173,6 +171,16 @@ const InventorySimulationModule: React.FC<Props> = ({ onSimulated, isSimulating,
               min={1}
               value={params.corridas}
               onChange={(e) => setParams(prev => ({ ...prev, corridas: parseInt(e.target.value) || 1 }))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            />
+          </div>
+
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Semilla (reproducible)</label>
+            <input
+              type="number"
+              value={params.baseSeed ?? 123456789}
+              onChange={(e) => setParams(prev => ({ ...prev, baseSeed: parseInt(e.target.value) || 123456789 }))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2"
             />
           </div>
