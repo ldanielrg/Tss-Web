@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck } from 'lucide-react'; // AGREGUE YO
+import { Clock, Users, Package, Play, BarChart, Truck, Divide } from 'lucide-react'; // AGREGUE YO
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 import { Navbar } from './layout/Navbar';
@@ -105,7 +105,7 @@ const SimulationModule: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Navbar />
+      
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6 rounded-lg">
         <div className="flex items-center space-x-3 mb-4">
           <Clock className="w-8 h-8" />
@@ -116,7 +116,6 @@ const SimulationModule: React.FC = () => {
         </p>
       </div>
 
-      <Outlet />
 
 
       {/* Selector de problema */}
@@ -192,10 +191,19 @@ const SimulationModule: React.FC = () => {
               </div>
             </div>
           </button>
+
+
+          <Navbar />
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+    {!selectedProblem  ? (
+      <div className="bg-white p-6 rounded-lg shadow-md">
+      <Outlet />
+      </div>
+    ) : (
+
+      <div className= "grid lg:grid-cols-3 gap-6">
         <div className="space-y-4">
           {selectedProblem === 'queue' && (
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -479,7 +487,8 @@ const SimulationModule: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </div> 
+)}
     </div>
   );
 };
