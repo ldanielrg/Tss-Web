@@ -26,7 +26,7 @@ const InventorySimulationModule: React.FC<Props> = ({ onSimulated, isSimulating,
     rStep: 5,
 
     corridas: 200,
-    baseSeed: 123456789, // reproducible
+    baseSeed: 123456789,
   });
 
   const run = () => {

@@ -41,21 +41,15 @@ const HistogramSVG: React.FC<HistogramProps> = ({
   bins = 8,
 }) => {
   const { counts, maxCount, xMin, xMax } = useMemo(() => {
-    if (!data.length) {
-      return { counts: [], maxCount: 1, xMin: 0, xMax: 1 };
-    }
-
+    if (!data.length) return { counts: [], maxCount: 1, xMin: 0, xMax: 1 };
     const min = Math.min(...data);
     const max = Math.max(...data);
-
-    if (min === max) {
-      return { counts: [data.length], maxCount: data.length, xMin: min, xMax: max };
-    }
+    if (min === max) return { counts: [data.length], maxCount: data.length, xMin: min, xMax: max };
 
     const b = Math.max(3, Math.min(20, bins));
     const width = (max - min) / b;
-
     const c = new Array(b).fill(0);
+
     for (const v of data) {
       let idx = Math.floor((v - min) / width);
       if (idx >= b) idx = b - 1;
@@ -66,13 +60,8 @@ const HistogramSVG: React.FC<HistogramProps> = ({
     return { counts: c, maxCount: Math.max(...c, 1), xMin: min, xMax: max };
   }, [data, bins]);
 
-  const W = 900;
-  const H = 320;
-  const padL = 55;
-  const padR = 20;
-  const padT = 28;
-  const padB = 45;
-
+  const W = 900, H = 320;
+  const padL = 55, padR = 20, padT = 28, padB = 45;
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
 
@@ -113,7 +102,13 @@ const HistogramSVG: React.FC<HistogramProps> = ({
           return (
             <g key={`bar-${i}`}>
               <rect x={x} y={y} width={Math.max(0, binW - 4)} height={h} fill="#60A5FA" />
-              <text x={x + Math.max(0, binW - 4) / 2} y={y - 4} textAnchor="middle" fontSize="10" fill="#374151">
+              <text
+                x={x + Math.max(0, binW - 4) / 2}
+                y={y - 4}
+                textAnchor="middle"
+                fontSize="10"
+                fill="#374151"
+              >
                 {c > 0 ? c : ''}
               </text>
             </g>
@@ -146,7 +141,7 @@ const HistogramSVG: React.FC<HistogramProps> = ({
 };
 
 const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
-  // ✅ hooks siempre arriba, sin returns antes
+  // ✅ Hooks arriba (sin romper reglas)
   const [histVar, setHistVar] = useState<'demanda' | 'neto' | 'faltante'>('demanda');
 
   const demandRows = useMemo(() => {
@@ -163,7 +158,6 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
     return Array.from({ length: 12 }, (_, i) => ({ mes: i + 1, factor: SEASONAL[i + 1] ?? 1.0 }));
   }, []);
 
-  // ✅ Este useMemo ahora se ejecuta SIEMPRE (summary puede ser null)
   const histData = useMemo(() => {
     const t = summary?.mejorTabla ?? [];
     if (histVar === 'demanda') return t.map(r => r.demandaAjustada);
@@ -185,7 +179,7 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
       ? 'Faltante (unidades)'
       : 'Inventario neto final (unidades)';
 
-  // ✅ ahora sí, returns después de hooks
+  // ✅ Estados
   if (isSimulating) {
     return (
       <div className="bg-white p-12 rounded-lg shadow-md text-center">
@@ -213,14 +207,19 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
   const best = summary.mejor;
   const bestCosts = summary.mejorCostos;
 
+  // ✅ Para el eje Y adaptativo del chart
+  const invIni = summary.mejorTabla[0]?.inventarioInicial ?? 0;
+  const yMaxFixed = Math.max(invIni, best.R + best.q);
+
   return (
     <div className="space-y-6">
       {/* Datos de entrada */}
       <div className="bg-white p-6 rounded-lg shadow-md space-y-3">
-        <h3 className="text-lg font-semibold">Datos de entrada (tablas)</h3>
+        <h3 className="text-lg font-semibold">Datos de entrada (Distribuciones y Estacionalidad)</h3>
+
         <div className="grid lg:grid-cols-3 gap-4">
           <div className="border rounded-lg overflow-hidden">
-            <div className="bg-gray-50 px-3 py-2 font-semibold text-sm">Distribución Demanda Base</div>
+            <div className="bg-gray-50 px-3 py-2 font-semibold text-sm">Demanda base (PMF/CDF)</div>
             <div className="max-h-80 overflow-auto">
               <table className="min-w-full text-xs border-collapse">
                 <thead className="sticky top-0 bg-white">
@@ -244,7 +243,7 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
           </div>
 
           <div className="border rounded-lg overflow-hidden">
-            <div className="bg-gray-50 px-3 py-2 font-semibold text-sm">Distribución Lead Time</div>
+            <div className="bg-gray-50 px-3 py-2 font-semibold text-sm">Lead time (PMF/CDF)</div>
             <div className="max-h-80 overflow-auto">
               <table className="min-w-full text-xs border-collapse">
                 <thead className="sticky top-0 bg-white">
@@ -268,7 +267,7 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
           </div>
 
           <div className="border rounded-lg overflow-hidden">
-            <div className="bg-gray-50 px-3 py-2 font-semibold text-sm">Factores Estacionales</div>
+            <div className="bg-gray-50 px-3 py-2 font-semibold text-sm">Factores estacionales</div>
             <div className="max-h-80 overflow-auto">
               <table className="min-w-full text-xs border-collapse">
                 <thead className="sticky top-0 bg-white">
@@ -322,10 +321,116 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
         </div>
       </div>
 
-      {/* Gráfica tipo libro */}
+      {/* Tabla mes a mes */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4">
+          Tabla de Simulación (modo libro) - q={best.q}, R={best.R}
+        </h3>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-xs border-collapse">
+            <thead className="bg-blue-50">
+              <tr>
+                <th className="border px-2 py-2 text-left">Mes</th>
+                <th className="border px-2 py-2 text-right">Inv Ini</th>
+                <th className="border px-2 py-2 text-right">Backlog Ini</th>
+                <th className="border px-2 py-2 text-right">Rand(D)</th>
+                <th className="border px-2 py-2 text-right">D Base</th>
+                <th className="border px-2 py-2 text-right">Factor</th>
+                <th className="border px-2 py-2 text-right">D Ajust</th>
+                <th className="border px-2 py-2 text-right">Inv Fin</th>
+                <th className="border px-2 py-2 text-right">Faltante</th>
+                <th className="border px-2 py-2 text-right">Backlog Fin</th>
+                <th className="border px-2 py-2 text-right">Rand(LT)</th>
+                <th className="border px-2 py-2 text-right">Pedido</th>
+                <th className="border px-2 py-2 text-right">Llega Mes</th>
+                <th className="border px-2 py-2 text-right">Inv Prom</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.mejorTabla.map((row) => (
+                <tr key={row.mes} className={row.mes % 2 === 0 ? 'bg-gray-50' : ''}>
+                  <td className="border px-2 py-2 font-medium">{row.mes}</td>
+                  <td className="border px-2 py-2 text-right">{row.inventarioInicial}</td>
+                  <td className="border px-2 py-2 text-right">{row.backlogInicial}</td>
+                  <td className="border px-2 py-2 text-right">{row.randDemanda.toFixed(5)}</td>
+                  <td className="border px-2 py-2 text-right">{row.demandaBase}</td>
+                  <td className="border px-2 py-2 text-right">{row.factorEstacional.toFixed(2)}</td>
+                  <td className="border px-2 py-2 text-right">{row.demandaAjustada}</td>
+                  <td className="border px-2 py-2 text-right">{row.inventarioFinal}</td>
+                  <td className="border px-2 py-2 text-right">{row.faltante}</td>
+                  <td className="border px-2 py-2 text-right">{row.backlogFinal}</td>
+                  <td className="border px-2 py-2 text-right">
+                    {row.randLeadTime !== null ? row.randLeadTime.toFixed(5) : '-'}
+                  </td>
+                  <td className="border px-2 py-2 text-right">{row.pedido}</td>
+                  <td className="border px-2 py-2 text-right">{row.llegadaOrdenMes ?? '-'}</td>
+                  <td className="border px-2 py-2 text-right">{row.inventarioPromedio.toFixed(1)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Top 10 */}
+      <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <BarChart className="w-5 h-5 text-amber-600" />
+            Resultados Inventario (R, q) - Top 10
+          </h3>
+
+          <div className="px-3 py-1 rounded bg-amber-50 text-amber-700 text-sm font-medium">
+            Óptimo: q = {best.q} | R = {best.R}
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm border">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="border px-2 py-2">q</th>
+                <th className="border px-2 py-2">R</th>
+                <th className="border px-2 py-2">Ordenar</th>
+                <th className="border px-2 py-2">Inventario</th>
+                <th className="border px-2 py-2">Faltante</th>
+                <th className="border px-2 py-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.top.map((row, idx) => {
+                const isBest = row.q === best.q && row.R === best.R;
+                return (
+                  <tr key={`${row.q}-${row.R}-${idx}`} className={isBest ? 'bg-amber-50' : ''}>
+                    <td className="border px-2 py-2 font-medium">{row.q}</td>
+                    <td className="border px-2 py-2 font-medium">{row.R}</td>
+                    <td className="border px-2 py-2">{row.costoOrdenarProm.toFixed(2)}</td>
+                    <td className="border px-2 py-2">{row.costoInventarioProm.toFixed(2)}</td>
+                    <td className="border px-2 py-2">{row.costoFaltanteProm.toFixed(2)}</td>
+                    <td className="border px-2 py-2 font-semibold">{row.costoPromedio.toFixed(2)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Gráfica Figura 5.2 */}
       <div className="bg-white p-6 rounded-lg shadow-md space-y-3">
         <h3 className="text-lg font-semibold">Gráfica de Inventario (tipo Figura 5.2)</h3>
-        <InventoryLevelChart tabla={summary.mejorTabla} R={best.R} />
+        <p className="text-sm text-gray-600">
+          Se grafica el <b>inventario neto</b> = Inventario - Backlog. Valores negativos representan faltantes.
+          La línea horizontal marca el punto de reorden <b>R</b>. El bracket indica <b>q</b>.
+        </p>
+
+        <InventoryLevelChart
+          tabla={summary.mejorTabla}
+          R={best.R}
+          q={best.q}
+          yMaxFixed={yMaxFixed}
+        />
       </div>
 
       {/* Histograma */}
@@ -346,6 +451,10 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
             </select>
           </div>
         </div>
+
+        <p className="text-sm text-gray-600">
+          Eje Y = número de meses (frecuencia) que caen en cada rango de valores (bins).
+        </p>
 
         <HistogramSVG
           data={histData}

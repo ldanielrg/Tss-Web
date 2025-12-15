@@ -13,10 +13,10 @@ export type InventorySimParams = {
 export type InventorySimMonthRow = {
   mes: number;
 
-  // inventario luego de recibir orden y cubrir backlog (antes de demanda del mes)
+  // Inventario disponible al inicio del mes (después de llegadas + cubrir backlog)
   inventarioInicial: number;
 
-  // backlog (faltante acumulado) luego de recibir orden y cubrir backlog (antes de demanda)
+  // Backlog (faltante acumulado) al inicio del mes
   backlogInicial: number;
 
   randDemanda: number;
@@ -26,15 +26,15 @@ export type InventorySimMonthRow = {
 
   inventarioFinal: number;
 
-  // faltante NUEVO del mes
+  // faltante NUEVO generado en el mes
   faltante: number;
 
   // backlog acumulado al final del mes
   backlogFinal: number;
 
-  randLeadTime: number | null;
-  pedido: number;
-  llegadaOrdenMes: number | null;
+  randLeadTime: number | null;    // solo si se ordenó
+  pedido: number;                 // 0 o q
+  llegadaOrdenMes: number | null; // mes en que llega (mes + LT + 1)
 
   inventarioPromedio: number;
 };
@@ -73,7 +73,7 @@ export type InventoryGridSearchParams = {
   costoFaltante: number;
   mesesSimulacion: number;
 
-  baseSeed?: number;
+  baseSeed?: number; // reproducible
 };
 
 export type InventoryGridPoint = {
@@ -88,6 +88,10 @@ export type InventoryGridPoint = {
 export type InventorySimulationSummary = {
   mejor: InventoryGridPoint;
   mejorTabla: InventorySimMonthRow[];
+
+  // desglose de una corrida ejemplo del mejor (q,R)
+  mejorCostos: InventorySimCosts;
+
   top: InventoryGridPoint[];
   todos?: InventoryGridPoint[];
 };

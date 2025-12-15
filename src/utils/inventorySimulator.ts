@@ -8,7 +8,7 @@ import type {
   InventorySimulationSummary,
 } from '../types/inventorySimulation';
 
-/** ================= RNG con semilla (LCG) ================= */
+/** RNG con semilla (LCG) */
 function makeLCG(seed: number) {
   let x = seed >>> 0;
   return () => {
@@ -17,7 +17,7 @@ function makeLCG(seed: number) {
   };
 }
 
-/** ================= Transformada inversa discreta ================= */
+/** Inversa discreta usando CDF */
 function invDiscrete(u: number, values: number[], cdf: number[]) {
   for (let i = 0; i < cdf.length; i++) {
     if (u <= cdf[i] + 1e-12) return values[i];
@@ -25,7 +25,7 @@ function invDiscrete(u: number, values: number[], cdf: number[]) {
   return values[values.length - 1];
 }
 
-/** ================= Tablas (Raúl Coss) ================= */
+/** Tablas (del libro / enunciado) */
 export const DEMAND_VALUES = [
   35, 36, 37, 38, 39, 40, 41, 42, 43,
   44, 45, 46, 47, 48, 49, 50, 51, 52,
@@ -56,28 +56,28 @@ export const SEASONAL: Record<number, number> = {
   12: 1.4,
 };
 
-export function seasonalFactor(month: number) {
+function seasonalFactor(month: number) {
   return SEASONAL[month] ?? 1.0;
 }
 
-/** ================= 1 corrida (modo libro) =================
+/**
+ * 1 corrida (modo libro):
  * - Backorders (faltante se acumula)
  * - Solo 1 orden pendiente
- * - Llegada: mesPedido + LT + 1
+ * - Llegada: mesPedido + LT + 1 (llega al INICIO del mes)
  * - Inventario promedio:
- *    sin faltante -> (Ini+Fin)/2
- *    con faltante -> Ini^2/(2*Demanda)
+ *    - sin faltante: (Ini+Fin)/2
+ *    - con faltante: Ini^2/(2*Demanda)
  */
 export function simulateInventoryRun(params: InventorySimParams, seed: number): InventorySimRunResult {
   const rnd = makeLCG(seed);
   const meses = Math.max(1, Math.floor(params.mesesSimulacion));
-
   const tabla: InventorySimMonthRow[] = [];
 
   let inv = Math.max(0, params.inventarioInicial);
   let backlog = 0;
 
-  // una orden pendiente
+  // orden pendiente (una sola)
   let pending = false;
   let pendingArrivalMonth: number | null = null;
 
@@ -86,7 +86,7 @@ export function simulateInventoryRun(params: InventorySimParams, seed: number): 
   let invPromTotal = 0;
 
   for (let mes = 1; mes <= meses; mes++) {
-    // 1) llega orden al INICIO del mes
+    // 1) llega orden al inicio del mes
     if (pending && pendingArrivalMonth === mes) {
       inv += params.q;
       pending = false;
@@ -121,7 +121,7 @@ export function simulateInventoryRun(params: InventorySimParams, seed: number): 
       backlog += faltanteMes;
     }
 
-    // 5) pedir si invFinal <= R y NO hay orden pendiente
+    // 5) regla de pedido: si invFinal <= R y NO hay orden pendiente
     let pedido = 0;
     let uLT: number | null = null;
     let llegadaMes: number | null = null;
@@ -193,7 +193,7 @@ export function simulateInventoryRun(params: InventorySimParams, seed: number): 
   return { params, tabla, costos };
 }
 
-/** ================= Grid Search ================= */
+/** Grid search */
 export function gridSearchInventory(params: InventoryGridSearchParams): InventorySimulationSummary {
   const corridas = Math.max(1, Math.floor(params.corridas));
   const baseSeed = (params.baseSeed ?? 123456789) >>> 0;
@@ -243,7 +243,7 @@ export function gridSearchInventory(params: InventoryGridSearchParams): Inventor
   const mejor = points[0];
   const top = points.slice(0, 10);
 
-  // corrida ejemplo del mejor para tabla + desglose
+  // corrida ejemplo del mejor (para tabla + desglose)
   const mejorParams: InventorySimParams = {
     inventarioInicial: params.inventarioInicial,
     q: mejor.q,
