@@ -8,7 +8,6 @@ import type {
   InventorySimulationSummary,
 } from '../types/inventorySimulation';
 
-/** ================= RNG con semilla (LCG) ================= */
 function makeLCG(seed: number) {
   let x = seed >>> 0;
   return () => {
@@ -17,7 +16,6 @@ function makeLCG(seed: number) {
   };
 }
 
-/** ================= Transformada inversa discreta ================= */
 function invDiscrete(u: number, values: number[], cdf: number[]) {
   for (let i = 0; i < cdf.length; i++) {
     if (u <= cdf[i] + 1e-12) return values[i];
@@ -25,8 +23,6 @@ function invDiscrete(u: number, values: number[], cdf: number[]) {
   return values[values.length - 1];
 }
 
-/** ================= Tablas del enunciado (TU IMAGEN) ================= */
-// Demanda base: cantidades 35..60 con su prob acumulada (columna C)
 const DEMAND_VALUES = [
   35, 36, 37, 38, 39, 40, 41, 42, 43,
   44, 45, 46, 47, 48, 49, 50, 51, 52,
@@ -39,12 +35,9 @@ const DEMAND_CDF = [
   0.784, 0.844, 0.894, 0.934, 0.964, 0.98, 0.995, 1.0
 ];
 
-// Lead time (meses) con prob 0.3, 0.4, 0.3 => CDF 0.3, 0.7, 1.0
 const LT_VALUES = [1, 2, 3];
 const LT_CDF = [0.3, 0.7, 1.0];
 
-// Factores estacionales por mes (tu tabla)
-// Nota: en tu imagen se ve hasta mes 11; si tienes mes 12 = 1.4, lo ponemos.
 const SEASONAL: Record<number, number> = {
   1: 1.2,
   2: 1.0,
@@ -64,101 +57,108 @@ function seasonalFactor(month: number) {
   return SEASONAL[month] ?? 1.0;
 }
 
-/** ================= 1 corrida (12 meses) =================
- * Replica tu Excel:
- * - DemandaBase: inversa con CDF
- * - DemandaAjustada: round(base * factorMes)
- * - InvFinal: MAX(0, InvIni - DemAjust)
- * - Faltante: MAX(0, DemAjust - InvIni)
- * - Pedido: si InvFinal <= R => q, sino 0
- * - LeadTime: inversa (1..3)
- * - LlegadaOrden: mes + leadTime
- * - Inventario promedio: (InvIni + InvFinal)/2
- *
- * Nota: Para poder sumar la llegada en el mes correcto,
- * manejamos un "pipeline" de pedidos: arrivals[mes] = cantidad que llega.
- * Tu Excel muestra "Llegada orden" como mes, acá lo guardamos también.
- */
 export function simulateInventoryRun(params: InventorySimParams, seed: number): InventorySimRunResult {
   const rnd = makeLCG(seed);
-
   const meses = Math.max(1, Math.floor(params.mesesSimulacion));
-  const arrivals: number[] = new Array(meses + 10).fill(0); // buffer extra por leadtime
   const tabla: InventorySimMonthRow[] = [];
 
   let inv = Math.max(0, params.inventarioInicial);
+
+  // backorders
+  let backlog = 0;
+
+  // 1 orden pendiente
+  let pending = false;
+  let pendingArrivalMonth: number | null = null;
 
   let numeroOrdenes = 0;
   let faltanteTotal = 0;
   let invPromTotal = 0;
 
   for (let mes = 1; mes <= meses; mes++) {
-    // 1) Recibir órdenes que llegan este mes
-    if (arrivals[mes] > 0) {
-      inv += arrivals[mes];
+    // llega al inicio del mes
+    if (pending && pendingArrivalMonth === mes) {
+      inv += params.q;
+      pending = false;
+      pendingArrivalMonth = null;
+    }
+
+    // cubrir backlog primero
+    if (backlog > 0 && inv > 0) {
+      const served = Math.min(inv, backlog);
+      inv -= served;
+      backlog -= served;
     }
 
     const invIni = inv;
+    const backlogIni = backlog; // <-- clave para la gráfica (neto al inicio)
 
-    // 2) Demanda base por inversa
+    // demanda
     const uD = rnd();
     const demandaBase = invDiscrete(uD, DEMAND_VALUES, DEMAND_CDF);
-
-    // 3) Ajustar por estacionalidad
     const factor = seasonalFactor(mes);
     const demandaAjustada = Math.round(demandaBase * factor);
 
-    // 4) Inventario final y faltante (ventas perdidas)
-    const invFinal = Math.max(0, invIni - demandaAjustada);
-    const faltante = Math.max(0, demandaAjustada - invIni);
+    // atender demanda
+    let invFinal = 0;
+    let faltanteMes = 0;
 
-    // 5) Pedido si InvFinal <= R
+    if (invIni >= demandaAjustada) {
+      invFinal = invIni - demandaAjustada;
+    } else {
+      invFinal = 0;
+      faltanteMes = demandaAjustada - invIni;
+      backlog += faltanteMes;
+    }
+
+    // pedido al final del mes si invFinal <= R y no hay pendiente
     let pedido = 0;
     let uLT: number | null = null;
     let llegadaMes: number | null = null;
 
-    if (invFinal <= params.R) {
+    if (!pending && invFinal <= params.R) {
       pedido = params.q;
       numeroOrdenes++;
 
       uLT = rnd();
       const lt = invDiscrete(uLT, LT_VALUES, LT_CDF);
-      llegadaMes = mes + lt;
 
-      // Programar llegada si cae dentro o después del horizonte
-      if (llegadaMes < arrivals.length) {
-        arrivals[llegadaMes] += pedido;
-      }
+      // modo libro: llega inicio de mes (mes + lt + 1)
+      llegadaMes = mes + lt + 1;
+      pending = true;
+      pendingArrivalMonth = llegadaMes;
     }
 
-    // 6) Inventario promedio
-    const invProm = (invIni + invFinal) / 2;
+    // inventario promedio (modo libro)
+    let invProm = 0;
+    if (faltanteMes === 0) {
+      invProm = (invIni + invFinal) / 2;
+    } else {
+      invProm = invIni > 0 ? (invIni * invIni) / (2 * demandaAjustada) : 0;
+    }
 
-    // guardar fila
     tabla.push({
       mes,
       inventarioInicial: invIni,
+      backlogInicial: backlogIni,
       randDemanda: uD,
       demandaBase,
       factorEstacional: factor,
       demandaAjustada,
       inventarioFinal: invFinal,
-      faltante,
+      faltante: faltanteMes,
+      backlogFinal: backlog,
       randLeadTime: uLT,
       pedido,
       llegadaOrdenMes: llegadaMes,
       inventarioPromedio: invProm,
     });
 
-    // actualizar estado para siguiente mes
     inv = invFinal;
-
-    // acumular métricas
-    faltanteTotal += faltante;
+    faltanteTotal += faltanteMes;
     invPromTotal += invProm;
   }
 
-  // Costos
   const costoOrdenar = numeroOrdenes * params.costoOrdenar;
   const hMensual = params.costoMantenerAnual / 12;
   const costoInventario = invPromTotal * hMensual;
@@ -178,9 +178,9 @@ export function simulateInventoryRun(params: InventorySimParams, seed: number): 
   return { params, tabla, costos };
 }
 
-/** ================= Experimento (grid search) ================= */
 export function gridSearchInventory(params: InventoryGridSearchParams): InventorySimulationSummary {
   const corridas = Math.max(1, Math.floor(params.corridas));
+  const baseSeed = (params.baseSeed ?? 123456789) >>> 0;
 
   const points: InventoryGridPoint[] = [];
 
@@ -202,7 +202,7 @@ export function gridSearchInventory(params: InventoryGridSearchParams): Inventor
           mesesSimulacion: params.mesesSimulacion,
         };
 
-        const seed = Date.now() + i * 10007 + q * 97 + R * 31;
+        const seed = (baseSeed + q * 1000003 + R * 9176 + i * 101) >>> 0;
         const r = simulateInventoryRun(runParams, seed);
 
         accOrd += r.costos.costoOrdenar;
@@ -227,7 +227,6 @@ export function gridSearchInventory(params: InventoryGridSearchParams): Inventor
   const mejor = points[0];
   const top = points.slice(0, 10);
 
-  // Simular una corrida del mejor (q, R) para obtener la tabla
   const mejorParams: InventorySimParams = {
     inventarioInicial: params.inventarioInicial,
     q: mejor.q,
@@ -237,9 +236,9 @@ export function gridSearchInventory(params: InventoryGridSearchParams): Inventor
     costoFaltante: params.costoFaltante,
     mesesSimulacion: params.mesesSimulacion,
   };
-  const mejorSeed = Date.now() + 99991;
-  const mejorRun = simulateInventoryRun(mejorParams, mejorSeed);
-  const mejorTabla = mejorRun.tabla;
 
-  return { mejor, mejorTabla, top, todos: points };
+  const mejorSeed = (baseSeed + 9999991) >>> 0;
+  const mejorRun = simulateInventoryRun(mejorParams, mejorSeed);
+
+  return { mejor, mejorTabla: mejorRun.tabla, top, todos: points };
 }

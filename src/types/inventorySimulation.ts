@@ -1,5 +1,4 @@
 export type InventorySimParams = {
-  // Parámetros (como tu tabla)
   inventarioInicial: number;     // 150
   q: number;                     // cantidad a ordenar
   R: number;                     // punto de reorden
@@ -14,7 +13,11 @@ export type InventorySimParams = {
 export type InventorySimMonthRow = {
   mes: number;
 
+  // inventario luego de recibir orden y cubrir backlog (antes de demanda del mes)
   inventarioInicial: number;
+
+  // backlog (faltante acumulado) luego de recibir orden y cubrir backlog (antes de demanda)
+  backlogInicial: number;
 
   randDemanda: number;
   demandaBase: number;
@@ -22,11 +25,16 @@ export type InventorySimMonthRow = {
   demandaAjustada: number;
 
   inventarioFinal: number;
+
+  // faltante NUEVO del mes
   faltante: number;
 
-  randLeadTime: number | null;   // solo si hay pedido
-  pedido: number;                // 0 o q
-  llegadaOrdenMes: number | null; // mes en que llega (mes actual + lead time)
+  // backlog acumulado al final del mes
+  backlogFinal: number;
+
+  randLeadTime: number | null;
+  pedido: number;
+  llegadaOrdenMes: number | null;
 
   inventarioPromedio: number;
 };
@@ -37,7 +45,6 @@ export type InventorySimCosts = {
   costoFaltante: number;
   costoTotal: number;
 
-  // extras útiles
   numeroOrdenes: number;
   faltanteTotalUnidades: number;
   inventarioPromedioTotal: number;
@@ -50,7 +57,6 @@ export type InventorySimRunResult = {
 };
 
 export type InventoryGridSearchParams = {
-  // rangos del experimento
   qMin: number;
   qMax: number;
   qStep: number;
@@ -59,15 +65,15 @@ export type InventoryGridSearchParams = {
   rMax: number;
   rStep: number;
 
-  // replicaciones
   corridas: number;
 
-  // parámetros base
   inventarioInicial: number;
   costoOrdenar: number;
   costoMantenerAnual: number;
   costoFaltante: number;
   mesesSimulacion: number;
+
+  baseSeed?: number;
 };
 
 export type InventoryGridPoint = {
@@ -81,7 +87,7 @@ export type InventoryGridPoint = {
 
 export type InventorySimulationSummary = {
   mejor: InventoryGridPoint;
-  mejorTabla: InventorySimMonthRow[]; // tabla de simulación del mejor (q,R)
-  top: InventoryGridPoint[]; // top 10
-  todos?: InventoryGridPoint[]; // opcional si quieres tabla completa
+  mejorTabla: InventorySimMonthRow[];
+  top: InventoryGridPoint[];
+  todos?: InventoryGridPoint[];
 };
