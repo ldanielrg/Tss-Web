@@ -104,7 +104,7 @@ const SimulationModule: React.FC = () => {
 
 
       {/* Selector de problema */}
-      {/* <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Seleccionar Problema de Simulación</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <button
@@ -141,9 +141,9 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
         </div>
-      </div> */}
+      </div>
 
-      {/* <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6">
         <div className="space-y-4">
           {selectedProblem === 'queue' && (
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -217,10 +217,10 @@ const SimulationModule: React.FC = () => {
               >
                 <Play className="w-4 h-4" />
                 <span>{isSimulating ? 'Simulando...' : 'Ejecutar Simulación'}</span>
-              </button> */}
+              </button>
 
               {/* Información teórica */}
-              {/* <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-medium text-blue-900 mb-2">Teoría M/M/1</h4>
                 <div className="text-sm text-blue-800 space-y-1">
                   <p><strong>ρ = λ/μ =</strong> {(queueParams.arrivalRate / queueParams.serviceRate).toFixed(3)} (Utilización)</p>
@@ -317,10 +317,10 @@ const SimulationModule: React.FC = () => {
               </button>
             </div>
           )}
-        </div> */}
+        </div>
 
         {/* Panel de resultados */}
-        {/* <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {results.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
@@ -379,7 +379,7 @@ const SimulationModule: React.FC = () => {
             </div>
           )}
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,18 @@
+[33md8ba88a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m actualizacion
+[33m9fb29ae[m nueva actualizacion
+[33mb2174d8[m[33m ([m[1;31morigin/jorge[m[33m)[m Subiendo los ultimos ajustes de graficos
+[33m1b19238[m Agregando el orden en la grafica de bajo de la linea R
+[33mbda6d07[m Agregando en la grafica la limitacion de q
+[33m189b669[m Agregando grafica de histogramas para inventario
+[33mf246338[m Agregando la grafica para inventarios
+[33mbf4209b[m Agregando tabla de simulacion para inventario
+[33m8e2835d[m Agregando la tabla de metricas por equipo
+[33m2eeaeea[m Modificando los titulos de las tablas y graficos
+[33mb815a8a[m Agregando grafica para mis costos totales de operavilidad
+[33me4fbc46[m Agregando la tabla de resultados, para que me muestre los resultados de costos totales segun al tamanio de equipo
+[33me926898[m Modificando el formato de hora
+[33m4d04c69[m Modificando el formato de hora
+[33m9e6f8de[m Modificando los parametros para que muestre en formato hora/minuto/segundo
+[33m374326e[m Agregando los parametros para la simulacion del camion
+[33m4303be0[m Agregando el boton de de Sistemas de colas camiones
+[33md94c4d9[m first commit
