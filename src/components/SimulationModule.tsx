@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Clock, Users, Package, Play, BarChart } from 'lucide-react';
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
+import { Navbar } from './layout/Navbar';
+import { Outlet } from 'react-router-dom';
 
 const SimulationModule: React.FC = () => {
   const [selectedProblem, setSelectedProblem] = useState<'queue' | 'inventory'>('queue');
@@ -87,6 +89,7 @@ const SimulationModule: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <Navbar />
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6 rounded-lg">
         <div className="flex items-center space-x-3 mb-4">
           <Clock className="w-8 h-8" />
@@ -97,8 +100,11 @@ const SimulationModule: React.FC = () => {
         </p>
       </div>
 
+      <Outlet />
+
+
       {/* Selector de problema */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      {/* <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Seleccionar Problema de Simulación</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <button
@@ -135,10 +141,9 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
         </div>
-      </div>
+      </div> */}
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Panel de configuración */}
+      {/* <div className="grid lg:grid-cols-3 gap-6">
         <div className="space-y-4">
           {selectedProblem === 'queue' && (
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -212,10 +217,10 @@ const SimulationModule: React.FC = () => {
               >
                 <Play className="w-4 h-4" />
                 <span>{isSimulating ? 'Simulando...' : 'Ejecutar Simulación'}</span>
-              </button>
+              </button> */}
 
               {/* Información teórica */}
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              {/* <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-medium text-blue-900 mb-2">Teoría M/M/1</h4>
                 <div className="text-sm text-blue-800 space-y-1">
                   <p><strong>ρ = λ/μ =</strong> {(queueParams.arrivalRate / queueParams.serviceRate).toFixed(3)} (Utilización)</p>
@@ -312,10 +317,10 @@ const SimulationModule: React.FC = () => {
               </button>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Panel de resultados */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* <div className="lg:col-span-2 space-y-6">
           {results.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
@@ -374,7 +379,7 @@ const SimulationModule: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
