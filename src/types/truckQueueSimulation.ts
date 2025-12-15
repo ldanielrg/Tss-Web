@@ -1,17 +1,17 @@
 export type TruckTeamSize = 3 | 4 | 5 | 6;
 export type TruckQueueParams = {
-  horaInicio: string;               // "23:00:00"
-  limiteLlegadas: string;           // "07:00:00"
-  horaBreak: string;                // "03:00:00"
-  duracionBreak: string;            // "00:30:00"
+  horaInicio: string;               
+  limiteLlegadas: string;           
+  horaBreak: string;               
+  duracionBreak: string;            
 
-  salarioHora: number;              // 25
-  salarioExtraHora: number;         // 37.5
-  costoEsperaCamionHora: number;    // 100
-  costoOperacionAlmacenHora: number;// 500
+  salarioHora: number;            
+  salarioExtraHora: number;       
+  costoEsperaCamionHora: number;   
+  costoOperacionAlmacenHora: number;
 
-  duracionJornadaHoras: number;     // 8
-  nTurnos: number;                  // 60
+  duracionJornadaHoras: number;    
+  nTurnos: number;                
   personas: 'AUTO' | TruckTeamSize;
 };
 
@@ -30,6 +30,6 @@ export type TruckQueueCost = {
 
 export type TruckQueueSummary = {
   nTurnos: number;
-  porEquipo: Record<number, TruckQueueCost>; // 3,4,5,6
+  porEquipo: Record<number, TruckQueueCost>; 
   equipoOptimo: number;
 };

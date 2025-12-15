@@ -1,22 +1,22 @@
 export type InventorySimParams = {
-  inventarioInicial: number;     // 150
-  q: number;                     // cantidad a ordenar
-  R: number;                     // punto de reorden
+  inventarioInicial: number;     
+  q: number;                     
+  R: number;                   
 
-  costoOrdenar: number;          // 100 Bs/orden
-  costoMantenerAnual: number;    // 20 Bs/unidad/año
-  costoFaltante: number;         // 50 Bs/unidad
+  costoOrdenar: number;       
+  costoMantenerAnual: number;   
+  costoFaltante: number;    
 
-  mesesSimulacion: number;       // 12
+  mesesSimulacion: number;    
 };
 
 export type InventorySimMonthRow = {
   mes: number;
 
-  // Inventario disponible al inicio del mes (después de llegadas + cubrir backlog)
+  // Inventario disponible al inicio del mes
   inventarioInicial: number;
 
-  // Backlog (faltante acumulado) al inicio del mes
+  // backlog acumulado al inicio del mes
   backlogInicial: number;
 
   randDemanda: number;
@@ -32,9 +32,9 @@ export type InventorySimMonthRow = {
   // backlog acumulado al final del mes
   backlogFinal: number;
 
-  randLeadTime: number | null;    // solo si se ordenó
-  pedido: number;                 // 0 o q
-  llegadaOrdenMes: number | null; // mes en que llega (mes + LT + 1)
+  randLeadTime: number | null;    
+  pedido: number;                
+  llegadaOrdenMes: number | null; 
 
   inventarioPromedio: number;
 };
@@ -73,7 +73,7 @@ export type InventoryGridSearchParams = {
   costoFaltante: number;
   mesesSimulacion: number;
 
-  baseSeed?: number; // reproducible
+  baseSeed?: number; 
 };
 
 export type InventoryGridPoint = {

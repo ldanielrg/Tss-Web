@@ -82,7 +82,6 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
   const yq = sy(q);
   const yMid = (y0 + yq) / 2;
 
-  // ✅ posición de textos "Orden X" debajo de la línea R, con clamp para no salirse
   const yR = sy(R);
   const yOrderText = Math.min(yR + 16, H - padB - 6);
 
@@ -137,7 +136,7 @@ const InventoryLevelChart: React.FC<Props> = ({ tabla, R, q, yMaxFixed }) => {
           <circle key={`pt-${idx}`} cx={sx(p.x)} cy={sy(p.y)} r={3} fill="#2563EB" />
         ))}
 
-        {/* ✅ Marcas de orden: texto DEBAJO de la línea R */}
+        {/* Marcas de orden, texto DEBAJO de la línea R */}
         {orders.map((m, idx) => (
           <g key={`ord-${m}-${idx}`}>
             <circle cx={sx(m)} cy={sy(R)} r={4} fill="#F59E0B" />

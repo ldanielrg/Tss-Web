@@ -15,7 +15,7 @@ function diffProb(cdf: number[]) {
   return cdf.map((v, i) => (i === 0 ? v : v - cdf[i - 1]));
 }
 
-/** ================= Histograma SVG (sin librerías) ================= */
+// Histograma genérico
 type HistogramProps = {
   data: number[];
   title?: string;
@@ -141,7 +141,6 @@ const HistogramSVG: React.FC<HistogramProps> = ({
 };
 
 const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
-  // ✅ Hooks arriba (sin romper reglas)
   const [histVar, setHistVar] = useState<'demanda' | 'neto' | 'faltante'>('demanda');
 
   const demandRows = useMemo(() => {
@@ -162,7 +161,7 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
     const t = summary?.mejorTabla ?? [];
     if (histVar === 'demanda') return t.map(r => r.demandaAjustada);
     if (histVar === 'faltante') return t.map(r => r.faltante);
-    return t.map(r => r.inventarioFinal - r.backlogFinal); // neto final
+    return t.map(r => r.inventarioFinal - r.backlogFinal); 
   }, [summary, histVar]);
 
   const histTitle =
@@ -179,7 +178,7 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
       ? 'Faltante (unidades)'
       : 'Inventario neto final (unidades)';
 
-  // ✅ Estados
+  //Estados
   if (isSimulating) {
     return (
       <div className="bg-white p-12 rounded-lg shadow-md text-center">
@@ -207,7 +206,7 @@ const InventoryResultsPanel: React.FC<Props> = ({ summary, isSimulating }) => {
   const best = summary.mejor;
   const bestCosts = summary.mejorCostos;
 
-  // ✅ Para el eje Y adaptativo del chart
+  //Para el eje Y adaptativo del chart
   const invIni = summary.mejorTabla[0]?.inventarioInicial ?? 0;
   const yMaxFixed = Math.max(invIni, best.R + best.q);
 
