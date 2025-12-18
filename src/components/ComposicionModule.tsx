@@ -30,6 +30,28 @@ export default function ComposicionModule() {
     []
   );
 
+    // === Bloque teórico (fórmulas) para mostrar en UI ===
+    const theory = useMemo(() => {
+      const a = p.a;
+      const b = p.b;
+      const c = p.c;
+
+      // Altura normalizada (misma lógica que en tu simulación)
+      // Área total = (h*a)/2 + h*(b-a) + (h*(c-b))/2 = 1
+      const h = 2 / (a + 2 * (b - a) + (c - b));
+
+      // Áreas (probabilidades) por región
+      const A1 = (h * a) / 2;
+      const A2 = h * (b - a);
+      const A3 = (h * (c - b)) / 2;
+
+      return { a, b, c, h, A1, A2, A3 };
+    }, [p.a, p.b, p.c]);
+
+    const f6 = (x: number) => x.toFixed(6);
+    const f4 = (x: number) => x.toFixed(4);
+
+
   const validate = (): string | null => {
     if (!(p.a > 0)) return 'a debe ser > 0';
     if (!(p.a < p.b && p.b < p.c)) return 'Debe cumplirse: 0 < a < b < c';
@@ -72,6 +94,88 @@ export default function ComposicionModule() {
 
   return (
     <div className="space-y-6">
+      {/* ===== Encabezado + Fundamento Matemático (como en tus ejemplos) ===== */}
+      <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-900">Método de Composición – Distribución Trapezoidal</h2>
+        <p className="text-gray-700 mt-1">
+          Generación de una variable aleatoria X con densidad trapezoidal usando composición en 3 sub-distribuciones:
+          f₁ (triangular creciente), f₂ (uniforme) y f₃ (triangular decreciente).
+        </p>
+
+        <div className="grid md:grid-cols-2 gap-6 mt-5">
+          {/* Densidad por partes */}
+          <div className="bg-white rounded-lg border p-4">
+            <h3 className="font-semibold text-gray-900 mb-2">Función de densidad por partes</h3>
+
+            <pre className="text-sm font-mono whitespace-pre-wrap text-gray-800">
+{`Sea 0 < a < b < c y soporte [0, c].
+
+f(x) =
+  (h/a)·x,                 0 ≤ x ≤ a
+  h,                       a < x ≤ b
+  (h/(c-b))·(c - x),        b < x ≤ c
+  0,                       otro caso
+
+Con tus parámetros actuales:
+a=${theory.a}, b=${theory.b}, c=${theory.c}, h=${f6(theory.h)}`}
+            </pre>
+          </div>
+
+          {/* Normalización + áreas */}
+          <div className="bg-white rounded-lg border p-4">
+            <h3 className="font-semibold text-gray-900 mb-2">Normalización (altura h) y probabilidades</h3>
+
+            <pre className="text-sm font-mono whitespace-pre-wrap text-gray-800">
+{`Área total = A₁ + A₂ + A₃ = 1
+
+A₁ = (h·a)/2          (triángulo izq)
+A₂ = h·(b-a)          (rectángulo)
+A₃ = (h·(c-b))/2      (triángulo der)
+
+⇒ h = 2 / (a + 2(b-a) + (c-b))
+
+Valores actuales:
+A₁=${f6(theory.A1)}   (${f4(theory.A1 * 100)}%)
+A₂=${f6(theory.A2)}   (${f4(theory.A2 * 100)}%)
+A₃=${f6(theory.A3)}   (${f4(theory.A3 * 100)}%)
+A₁+A₂+A₃=${f6(theory.A1 + theory.A2 + theory.A3)}`}
+            </pre>
+          </div>
+        </div>
+
+        {/* Algoritmo */}
+        <div className="mt-6 bg-white rounded-lg border p-4">
+          <h3 className="font-semibold text-gray-900 mb-2">Algoritmo del método de Composición (paso a paso)</h3>
+
+          <pre className="text-sm font-mono whitespace-pre-wrap text-gray-800">
+{`Paso 1) Generar dos uniformes independientes:
+        U₁ ~ U(0,1)  (selección de región)
+        U₂ ~ U(0,1)  (generación del valor)
+
+Paso 2) Seleccionar la región por “ruleta” usando A₁, A₂, A₃:
+        Si U₁ ≤ A₁              ⇒ región f₁
+        Si A₁ < U₁ ≤ A₁ + A₂     ⇒ región f₂
+        Si U₁ > A₁ + A₂          ⇒ región f₃
+
+Paso 3) Generar X condicionado a la región (transformada inversa condicional):
+
+   Región f₁ (triangular creciente en [0,a]):
+        X = a · √(U₂)
+
+   Región f₂ (uniforme en [a,b]):
+        X = a + (b-a) · U₂
+
+   Región f₃ (triangular decreciente en [b,c]):
+        X = c - (c-b) · √(1 - U₂)
+
+Paso 4) Repetir n veces para obtener la muestra simulada y comparar:
+        - Histograma (densidad)
+        - Curva teórica f(x)
+        - % por región simulado vs % teórico (A₁,A₂,A₃)`}
+          </pre>
+        </div>
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Panel parámetros */}
         <div className="space-y-4">

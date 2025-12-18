@@ -46,7 +46,7 @@ export default function ComposicionChart({
             borderWidth: 2,
             tension: 0.25,
             pointRadius: 0,
-            borderColor: 'rgba(249, 115, 22, 1)',       // naranja
+            borderColor: 'rgba(249, 22, 22, 1)',       // naranja
             backgroundColor: 'rgba(249, 115, 22, 0.15)',
         },
     ],

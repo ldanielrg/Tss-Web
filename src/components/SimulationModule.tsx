@@ -332,7 +332,7 @@ const SimulationModule: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Divide className="w-6 h-6" />
               <div className="text-left">
-                <h4 className="font-medium">Composición</h4>
+                <h4 className="font-medium">Composición Trapezoidal</h4>
                 <p className="text-sm text-gray-600">Trapezoidal (f₁,f₂,f₃)</p>
               </div>
             </div>
