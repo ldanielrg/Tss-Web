@@ -29,7 +29,9 @@ const SimulationModule: React.FC = () => {
     | 'inventory'
     | 'camiones'
     | 'inventoryRQ'
-    | 'serviceSystems'
+    | 'service-serie'
+    | 'service-banco'
+    | 'service-estacionamiento'
     | 'inverse-transform'
     | 'magazine-vendor'
     | 'investment-project'
@@ -207,11 +209,11 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
 
-          {/* Botón Servicios */}
+          {/* Servicios - Serie */}
           <button
-            onClick={() => setSelectedProblem('serviceSystems')}
+            onClick={() => setSelectedProblem('service-serie')}
             className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'serviceSystems'
+              selectedProblem === 'service-serie'
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
@@ -219,8 +221,44 @@ const SimulationModule: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Server className="w-6 h-6" />
               <div className="text-left">
-                <h4 className="font-medium">Sistemas de Servicio</h4>
-                <p className="text-sm text-gray-600">Serie / Banco / Estacionamiento</p>
+                <h4 className="font-medium">Servicio: Serie</h4>
+                <p className="text-sm text-gray-600">2 estaciones (Exp + Uniforme)</p>
+              </div>
+            </div>
+          </button>
+
+          {/* Servicios - Banco */}
+          <button
+            onClick={() => setSelectedProblem('service-banco')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'service-banco'
+                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Server className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Servicio: Banco</h4>
+                <p className="text-sm text-gray-600">N cajeros, servicio uniforme</p>
+              </div>
+            </div>
+          </button>
+
+          {/* Servicios - Estacionamiento */}
+          <button
+            onClick={() => setSelectedProblem('service-estacionamiento')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'service-estacionamiento'
+                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Server className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Servicio: Estacionamiento</h4>
+                <p className="text-sm text-gray-600">Capacidad finita (sin cola)</p>
               </div>
             </div>
           </button>
@@ -292,8 +330,17 @@ const SimulationModule: React.FC = () => {
           {selectedProblem === 'magazine-vendor' && <MagazineVendor />}
           {selectedProblem === 'investment-project' && <InvestmentProject />}
         </>
-      ) : selectedProblem === 'serviceSystems' ? (
-        <ServiceSystemsModule />
+      ) : ['service-serie','service-banco','service-estacionamiento'].includes(selectedProblem) ? (
+        <ServiceSystemsModule
+          initialKind={
+            selectedProblem === 'service-serie'
+              ? 'serie'
+              : selectedProblem === 'service-banco'
+              ? 'banco'
+              : 'estacionamiento'
+          }
+          showSelector={false}
+        />
       ) : (
     
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Play, Clock, Server } from 'lucide-react';
 import Tooltip from './Tooltip';
 import ServiceSystemsChart from './ServiceSystemsChart';
@@ -13,6 +13,11 @@ import {
 } from '../utils/serviceSystemsSimulator';
 
 type Kind = 'serie' | 'banco' | 'estacionamiento';
+
+type Props = {
+  initialKind?: Kind;
+  showSelector?: boolean;
+};
 
 const DEFAULT_SERIE: SerieParams = {
   lambdaPerHour: 20,
@@ -38,8 +43,11 @@ const DEFAULT_EST: EstacionamientoParams = {
   cierreHours: 8,
 };
 
-export default function ServiceSystemsModule() {
-  const [kind, setKind] = useState<Kind>('serie');
+export default function ServiceSystemsModule({
+  initialKind = 'serie',
+  showSelector = true,
+}: Props) {
+  const [kind, setKind] = useState<Kind>(initialKind);
 
   const [serie, setSerie] = useState<SerieParams>({ ...DEFAULT_SERIE });
   const [banco, setBanco] = useState<BancoParams>({ ...DEFAULT_BANCO });
@@ -48,6 +56,13 @@ export default function ServiceSystemsModule() {
   const [result, setResult] = useState<SimulationOutput | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+    useEffect(() => {
+    setKind(initialKind);
+    setResult(null);
+    setError(null);
+  }, [initialKind]);
+
 
   const theme = useMemo(() => {
     if (kind === 'serie')
@@ -113,67 +128,74 @@ export default function ServiceSystemsModule() {
         {/* Panel de parámetros */}
         <div className="space-y-4">
           <div className="bg-white p-6 rounded-lg shadow-md">
+            {showSelector && (
+              <>
+                <div className="flex items-center space-x-3">
+                  <div className="w-5 h-5 rounded-lg flex items-center justify-center">
+                    <Server className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold">Seleccionar Sistema</h3>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600">Serie / Banco / Estacionamiento</p>
+
+                <div className="grid grid-cols-1 gap-2 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKind('serie');
+                      setResult(null);
+                    }}
+                    className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                      kind === 'serie' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium">Serie</div>
+                    <div className="text-xs text-gray-500">2 estaciones (Exp + Uniforme)</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKind('banco');
+                      setResult(null);
+                    }}
+                    className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                      kind === 'banco' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium">Banco</div>
+                    <div className="text-xs text-gray-500">N cajeros, servicio uniforme</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKind('estacionamiento');
+                      setResult(null);
+                    }}
+                    className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                      kind === 'estacionamiento' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium">Estacionamiento</div>
+                    <div className="text-xs text-gray-500">Capacidad finita (sin cola)</div>
+                  </button>
+                </div>
+
+                <hr className="my-4" />
+              </>
+            )}
+
             <div className="flex items-center space-x-3">
-              <div className="w-5 h-5 rounded-lg flex items-center justify-center">
-                <Server className="w-6 h-6 text-indigo-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-lg font-semibold">Seleccionar Sistema</h3>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600">Serie / Banco / Estacionamiento</p>
-
-            <div className="grid grid-cols-1 gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setKind('serie');
-                  setResult(null);
-                }}
-                className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
-                  kind === 'serie' ? theme.pill : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-medium">Serie</div>
-                <div className="text-xs text-gray-500">2 estaciones (Exp + Uniforme)</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setKind('banco');
-                  setResult(null);
-                }}
-                className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
-                  kind === 'banco' ? theme.pill : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-medium">Banco</div>
-                <div className="text-xs text-gray-500">N cajeros, servicio uniforme</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setKind('estacionamiento');
-                  setResult(null);
-                }}
-                className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
-                  kind === 'estacionamiento' ? theme.pill : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-medium">Estacionamiento</div>
-                <div className="text-xs text-gray-500">Capacidad finita (sin cola)</div>
-              </button>
-              <hr className="my-4" />
-              <div className="flex items-center space-x-3">
               <div className="w-5 h-5 rounded-lg flex items-center justify-center">
                 <Server className="w-6 h-6 text-indigo-600" />
               </div>
               <div className="text-left">
                 <h3 className="text-lg font-semibold">Parámetros de Sistema de Servicio</h3>
               </div>
-            </div>
             </div>
 
             {error && (
