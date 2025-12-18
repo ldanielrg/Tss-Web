@@ -16,6 +16,8 @@ import type { InventorySimulationSummary } from '../types/inventorySimulation'; 
 
 //Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
+import ComposicionModule from './ComposicionModule';
+
 
 // Nuevas páginas
 import { InverseTransform } from '../pages/InverseTransform';
@@ -35,6 +37,7 @@ const SimulationModule: React.FC = () => {
     | 'inverse-transform'
     | 'magazine-vendor'
     | 'investment-project'
+    | 'composicion'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -317,6 +320,24 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
 
+          {/* Botón Composicion parte 1_5 */}
+          <button
+            onClick={() => setSelectedProblem('composicion')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'composicion'
+                ? 'border-teal-500 bg-teal-50 text-teal-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Divide className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Composición</h4>
+                <p className="text-sm text-gray-600">Trapezoidal (f₁,f₂,f₃)</p>
+              </div>
+            </div>
+          </button>
+
 
 
         </div>
@@ -341,6 +362,8 @@ const SimulationModule: React.FC = () => {
           }
           showSelector={false}
         />
+      ) : selectedProblem === 'composicion' ? (
+        <ComposicionModule />
       ) : (
     
 
