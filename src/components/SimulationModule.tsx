@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server  } from 'lucide-react'; // AGREGUE YO
+import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp } from 'lucide-react'; // AGREGUE YO
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
-import { Navbar } from './layout/Navbar';
 import { Outlet } from 'react-router-dom';
 
 // Camiones
@@ -18,10 +17,22 @@ import type { InventorySimulationSummary } from '../types/inventorySimulation'; 
 //Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
 
+// Nuevas páginas
+import { InverseTransform } from '../pages/InverseTransform';
+import { MagazineVendor } from '../pages/MagazineVendor';
+import { InvestmentProject } from '../pages/InvestmentProject';
+
 
 const SimulationModule: React.FC = () => {
   const [selectedProblem, setSelectedProblem] = useState<
-    'queue' | 'inventory' | 'camiones' | 'inventoryRQ' | 'serviceSystems'
+    | 'queue'
+    | 'inventory'
+    | 'camiones'
+    | 'inventoryRQ'
+    | 'serviceSystems'
+    | 'inverse-transform'
+    | 'magazine-vendor'
+    | 'investment-project'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -214,19 +225,76 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
 
+          {/* Botón Transformada Inversa */}
+          <button
+            onClick={() => setSelectedProblem('inverse-transform')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'inverse-transform'
+                ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Divide className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Transformada Inversa</h4>
+                <p className="text-sm text-gray-600">Generación de variables no estándar</p>
+              </div>
+            </div>
+          </button>
+
+          {/* Botón Inventarios (Vendedor de Revistas) */}
+          <button
+            onClick={() => setSelectedProblem('magazine-vendor')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'magazine-vendor'
+                ? 'border-rose-500 bg-rose-50 text-rose-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <BookOpen className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Inventarios</h4>
+                <p className="text-sm text-gray-600">Modelo del vendedor de revistas</p>
+              </div>
+            </div>
+          </button>
+
+          {/* Botón Inversiones */}
+          <button
+            onClick={() => setSelectedProblem('investment-project')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'investment-project'
+                ? 'border-lime-500 bg-lime-50 text-lime-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <TrendingUp className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Inversiones</h4>
+                <p className="text-sm text-gray-600">Análisis de riesgo financiero</p>
+              </div>
+            </div>
+          </button>
+
 
 
         </div>
-        <Navbar />
+
       </div>
 
-    {selectedProblem === null ? (
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <Outlet />
-      </div>
-    ) : selectedProblem === 'serviceSystems' ? (
-      <ServiceSystemsModule />
-    ) : (
+
+      {['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
+        <>
+          {selectedProblem === 'inverse-transform' && <InverseTransform />}
+          {selectedProblem === 'magazine-vendor' && <MagazineVendor />}
+          {selectedProblem === 'investment-project' && <InvestmentProject />}
+        </>
+      ) : selectedProblem === 'serviceSystems' ? (
+        <ServiceSystemsModule />
+      ) : (
     
 
       <div className= "grid lg:grid-cols-3 gap-6">

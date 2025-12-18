@@ -12,6 +12,9 @@ import Opcion1 from './simulstat_parte1/pages/Opcion1.tsx';
 import Opcion2 from './simulstat_parte1/pages/Opcion2.tsx';
 import Opcion3 from './simulstat_parte1/pages/Opcion3.tsx';
 import Opcion4 from './simulstat_parte1/pages/Opcion4.tsx';
+import Camiones from './components/TruckCompositionModule.tsx';
+import Actividad1_8 from './pages/Actividad1-8.tsx';
+import Actividad1_1 from './pages/Actividad1-1.tsx';
 
 const App: React.FC = () => {
   return (
@@ -30,7 +33,10 @@ const App: React.FC = () => {
           <Route path="opcion-3" element={<Opcion3 />} />
           <Route path="opcion-4" element={<Opcion4 />} />
         </Route>
-        
+        <Route path="/camiones" element={<Camiones />} />
+        <Route path="/actividad1-8" element={<Actividad1_8 />} />
+        <Route path="/actividad1-1" element={<Actividad1_1 />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
