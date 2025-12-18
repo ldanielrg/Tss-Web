@@ -757,6 +757,48 @@ Ejemplo (tiempos): Exponencial(λ) para tiempos entre eventos.`,
           </div>
         )}
 
+
+        <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <InfoCard title="¿Para qué sirven estos valores? (guía rápida)">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <b>Generador:</b> define <i>cómo</i> obtienes los números U(0,1). <b>Math.random()</b> es cómodo; los
+                <b> LCG</b> son ideales para entender el proceso y repetir experimentos.
+              </li>
+              <li>
+                <b>n (tamaño de muestra base):</b> cuántos U(0,1) se generan para alimentar histogramas, pruebas y
+                transformaciones. Con n pequeño verás más “ruido”; con n grande las pruebas son más exigentes
+                (pero la página puede ir más lenta).
+              </li>
+              <li>
+                <b>Semilla (x₀):</b> el punto de arranque del LCG. Cambiarla cambia toda la secuencia. Mantener la misma
+                semilla permite <b>reproducir</b> resultados (muy útil al depurar o comparar escenarios).
+              </li>
+              <li>
+                <b>a, c, m:</b> parámetros del LCG. <b>m</b> (módulo) controla el “tamaño” del ciclo posible; <b>a</b> (multiplicador)
+                y <b>c</b> (incremento, solo en el mixto) afectan la calidad y el <b>periodo</b> (cuándo se repite la secuencia).
+              </li>
+            </ul>
+          </InfoCard>
+
+          <TipCard title="¿Cómo leer los números que aparecen a la derecha?">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <b>mean</b> debería acercarse a <b>0.5</b> si la muestra se parece a U(0,1).
+              </li>
+              <li>
+                <b>var</b> debería acercarse a <b>1/12 ≈ 0.0833</b> para U(0,1).
+              </li>
+              <li>
+                <b>periodo detectado</b>: si el módulo ve que el estado interno se repite, te muestra un estimado del
+                ciclo. Un periodo muy corto es una señal de alarma (puede introducir patrones en las gráficas).
+              </li>
+              <li>
+                Si algo “falla” en pruebas (uniformidad/independencia), prueba: subir <b>m</b>, cambiar <b>a</b>/<b>c</b> o usar otra semilla.
+              </li>
+            </ul>
+          </TipCard>
+        </div>
         <div className="mt-5 flex items-center gap-3">
           <button
             onClick={() => setBaseSample(sampleU(prngType, nBase, seed, a, c, m))}
@@ -867,6 +909,53 @@ Ejemplo (tiempos): Exponencial(λ) para tiempos entre eventos.`,
                 Si un generador está mal, puede concentrarse en ciertas zonas y eso arruina una simulación.
               </p>
             </InfoCard>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <InfoCard title="¿Qué es el promedio (promedio muestral)?">
+                <p>
+                  El <b>promedio</b> es una forma rápida de “resumir” una lista de números en un solo valor:
+                  si tienes <b>n</b> números <b>u₁, u₂, …, uₙ</b>, el promedio es
+                  <span className="ml-1 font-mono">x̄ = (u₁+u₂+…+uₙ)/n</span>.
+                </p>
+                <p className="mt-2">
+                  Para una <b>U(0,1)</b>, el valor esperado es <b>0.5</b>.
+                  Así que si tu promedio se aleja demasiado de 0.5, es una señal de que algo anda raro
+                  (o de que <b>n</b> es muy pequeño).
+                </p>
+              </InfoCard>
+
+              <InfoCard title="¿Qué es Chi² (chi-cuadrada) aquí?">
+                <p>
+                  La prueba <b>Chi² de bondad de ajuste</b> compara lo que <i>observaste</i> contra lo que
+                  <i>deberías observar</i> si fuera uniforme.
+                </p>
+                <p className="mt-2">
+                  Dividimos el intervalo <b>[0,1)</b> en <b>k</b> cajitas (bins). Si todo es uniforme,
+                  en cada cajita esperarías aproximadamente <span className="font-mono">E = n/k</span> números.
+                  Luego se calcula un estadístico que “castiga” diferencias grandes entre conteos.
+                </p>
+                <p className="mt-2">
+                  Intuición: si ves algunas cajitas casi vacías y otras súper llenas, Chi² tiende a salir grande
+                  y el test puede <b>rechazar</b> la uniformidad.
+                </p>
+              </InfoCard>
+
+              <InfoCard title="¿Qué es K–S (Kolmogorov–Smirnov)?">
+                <p>
+                  K–S no usa cajitas: ordena la muestra y construye una curva acumulada empírica <b>Fₙ(x)</b>
+                  (“qué fracción va por debajo de x”).
+                </p>
+                <p className="mt-2">
+                  Para la <b>U(0,1)</b> la acumulada ideal es la recta <span className="font-mono">F(x)=x</span>.
+                  K–S mide la <b>mayor distancia</b> entre tu curva empírica y esa recta.
+                </p>
+                <p className="mt-2">
+                  Intuición: si tu secuencia se “amontona” en algún rango, la curva se separa de la recta
+                  y el estadístico K–S crece.
+                </p>
+              </InfoCard>
+            </div>
+
 
             <MiniTheory>
               <ul className="list-disc pl-5 space-y-1">
@@ -1110,7 +1199,31 @@ Ejemplo (tiempos): Exponencial(λ) para tiempos entre eventos.`,
               </p>
             </MiniTheory>
 
-            <TipCard title="Prueba guiada">
+            
+            <InfoCard title="Procedimiento a mano (Transformada inversa)">
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Parte de la <b>fdp</b> (densidad) que quieres simular: <code>f(x)</code>.</li>
+                <li>Integra para obtener la acumulada: <code>F(x)=∫ f(x) dx</code> (respetando intervalos si es por tramos).</li>
+                <li>Iguala a un uniforme: <code>F(x)=R</code>, con <code>0&lt;R&lt;1</code>.</li>
+                <li>Despeja <code>x</code>: <code>x = F⁻¹(R)</code>.</li>
+                <li>Si <code>F(x)</code> es por tramos, primero calcula el <b>rango de R</b> de cada tramo y luego eliges la fórmula correcta.</li>
+              </ol>
+              <div className="mt-3 text-sm">
+                Para la exponencial: <code>F(x)=1−e^(−λx)</code> ⇒ <code>x=−ln(1−R)/λ</code>.
+              </div>
+            </InfoCard>
+
+            <TipCard title="Ejemplo rápido (a mano)">
+              <div className="space-y-1">
+                <div>
+                  Si λ=2 y R=0.30: <code>x = −ln(0.70)/2 ≈ 0.178</code>.
+                </div>
+                <div className="text-xs text-amber-800/80">
+                  Nota: en una distribución por tramos (ej. triangular), primero verificas si R cae en el tramo 1 o 2 y luego aplicas la inversa del tramo.
+                </div>
+              </div>
+            </TipCard>
+<TipCard title="Prueba guiada">
               <ol className="list-decimal pl-5 space-y-1">
                 <li>Prueba λ=1, luego λ=4.</li>
                 <li>Con λ=4 la distribución debería “apretarse” más cerca de 0.</li>
@@ -1177,7 +1290,27 @@ Ejemplo (tiempos): Exponencial(λ) para tiempos entre eventos.`,
               </p>
             </InfoCard>
 
-            <MiniTheory>
+            
+            <InfoCard title="Procedimiento a mano (Aceptación–Rechazo)">
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Genera dos uniformes: <code>R1</code> y <code>R2</code>.</li>
+                <li>Propón un candidato uniforme <code>x = a + (b−a)·R1</code>.</li>
+                <li>Construye <code>y = M·R2</code> (con <code>M ≥ fmax</code> en [a,b]).</li>
+                <li>Evalúa <code>f(x)</code> y <b>acepta</b> si <code>y ≤ f(x)</code>. Si no, <b>rechaza</b> y repite.</li>
+              </ol>
+              <div className="mt-3 text-sm">
+                En este ejemplo <code>f(x)=2x</code> en <code>[0,1]</code> y <code>fmax=2</code>, así que lo correcto es usar <code>M=2</code>.
+                Con eso, la regla se simplifica a: <code>R2 ≤ R1</code>.
+              </div>
+            </InfoCard>
+
+            <TipCard title="Ejemplo (a mano)">
+              <ul className="list-disc pl-5 space-y-1">
+                <li>R1=0.24, R2=0.87 ⇒ 0.87 ≤ 0.24 (NO) ⇒ se rechaza.</li>
+                <li>R1=0.65, R2=0.04 ⇒ 0.04 ≤ 0.65 (SÍ) ⇒ se acepta x=0.65.</li>
+              </ul>
+            </TipCard>
+<MiniTheory>
               <p>
                 <b>M</b> es el “techo” donde tiras los dardos.
                 Si M es muy grande, rechazas mucho y se vuelve lento.
@@ -1285,7 +1418,29 @@ Ejemplo (tiempos): Exponencial(λ) para tiempos entre eventos.`,
               </p>
             </MiniTheory>
 
-            <TipCard title="Prueba guiada">
+            
+            <InfoCard title="Procedimiento a mano (Composición / Mezcla)">
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Divide la densidad en componentes <code>f1(x), f2(x), …</code> con pesos <code>A1, A2, …</code> (probabilidades) y verifica que <code>∑Ai = 1</code>.</li>
+                <li>Genera <code>R1</code> para <b>elegir el componente</b> (como una moneda): si <code>R1 &lt; A1</code> eliges 1; si no, revisas el siguiente tramo, etc.</li>
+                <li>Genera <code>R2</code> para <b>simular dentro del componente</b> usando el método que corresponda (transformada inversa o rechazo).</li>
+              </ol>
+              <div className="mt-3 text-sm">
+                Aquí usamos 2 exponenciales: con probabilidad <code>p</code> eliges Exp(λ1) y con <code>1−p</code> eliges Exp(λ2).
+                Luego, dentro del componente, generas <code>x = −ln(1−R2)/λ</code>.
+              </div>
+            </InfoCard>
+
+            <TipCard title="Pseudocódigo (a mano)">
+              <pre className="text-xs whitespace-pre-wrap bg-amber-100/40 p-3 rounded">
+{`R1 = U(0,1)
+R2 = U(0,1)
+si (R1 < p)   λ = λ1
+si no         λ = λ2
+X = -ln(1-R2)/λ`}
+              </pre>
+            </TipCard>
+<TipCard title="Prueba guiada">
               <ol className="list-decimal pl-5 space-y-1">
                 <li>Fija λ1=1 y λ2=6.</li>
                 <li>Con p cerca de 1 domina λ1; con p cerca de 0 domina λ2.</li>
