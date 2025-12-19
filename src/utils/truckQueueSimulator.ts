@@ -16,27 +16,33 @@ function minutesFromStart(time: string, start: string): number {
   const sMin = s.h * 60 + s.m + s.sec / 60;
 
   const adj = tMin < sMin ? tMin + 24 * 60 : tMin;
-  return Math.round(adj - sMin);
+  // floor evita que 07:29:59 “suba” a 510 por redondeo
+  return Math.floor(adj - sMin);
 }
 
 function durationToMinutes(dur: string): number {
   const t = parseHHMMSS(dur);
-  return Math.round(t.h * 60 + t.m + t.sec / 60);
+  return Math.floor(t.h * 60 + t.m + t.sec / 60);
 }
 
 function makeLCG(seed: number) {
   let x = seed >>> 0;
   return () => {
     x = (1103515245 * x + 12345) >>> 0;
-    return x / 2 ** 32;
+    return x / 2 ** 32; // [0,1)
   };
 }
 
+/**
+ * Transformada inversa discreta, fiel al libro:
+ * - intervalos del tipo [Fprev, F)
+ * - por eso usamos u < acc (no <=)
+ */
 function invDiscrete(u: number, values: number[], probs: number[]) {
   let acc = 0;
   for (let i = 0; i < values.length; i++) {
     acc += probs[i];
-    if (u <= acc + 1e-12) return values[i];
+    if (u < acc) return values[i];
   }
   return values[values.length - 1];
 }
@@ -45,11 +51,11 @@ function invDiscrete(u: number, values: number[], probs: number[]) {
 const INIT_TRUCKS = [0, 1, 2, 3];
 const INIT_P = [0.5, 0.25, 0.15, 0.1];
 
-// Intervalo de llegada (min) - (exacto)
+// Intervalo de llegada (min)
 const IA_T = [20, 25, 30, 35, 40, 45, 50, 55, 60];
 const IA_P = [0.02, 0.08, 0.12, 0.25, 0.20, 0.15, 0.10, 0.05, 0.03];
 
-// Servicio por equipo (min) - (exacto)
+// Servicio por equipo (min)
 const S3_T = [20, 25, 30, 35, 40, 45, 50, 55, 60];
 const S3_P = [0.05, 0.10, 0.20, 0.25, 0.12, 0.10, 0.08, 0.06, 0.04];
 
@@ -71,6 +77,7 @@ function sampleService(u: number, team: number) {
     default: return invDiscrete(u, S3_T, S3_P);
   }
 }
+
 // Simulación de una noche
 function simulateOneNight(params: TruckQueueParams, team: number, seed: number): TruckQueueCost {
   const rnd = makeLCG(seed);
@@ -83,7 +90,7 @@ function simulateOneNight(params: TruckQueueParams, team: number, seed: number):
 
   const jornadaEnd = Math.round(params.duracionJornadaHoras * 60);
 
-  // Cola de llegadas (min desde inicio)
+  // --- Generar llegadas (incluye cola inicial) ---
   const initN = invDiscrete(rnd(), INIT_TRUCKS, INIT_P);
 
   const arrivals: number[] = [];
@@ -98,31 +105,29 @@ function simulateOneNight(params: TruckQueueParams, team: number, seed: number):
     lastArrival = next;
   }
 
-  // Servidor
-  let serverFreeAt = 0;
-  let breakTaken = false;
+  // --- Servidor / break ---
+  let serverFreeAt = 0;      // fin del último servicio o fin break (si aplica)
+  let breakTaken = false;    // break ya aplicado
 
-  let firstStart = Number.POSITIVE_INFINITY;
   let lastFinish = 0;
 
   let totalWait = 0;
   let served = 0;
 
   for (const arrival of arrivals) {
+    // momento “tentativo” de inicio
     let start = Math.max(serverFreeAt, arrival);
 
-    if (!breakTaken) {
-      if (serverFreeAt <= breakStart && start >= breakStart) {
-        // libres a la hora del break
-        serverFreeAt = breakStart + breakDur;
-        breakTaken = true;
-        start = Math.max(serverFreeAt, arrival);
-      } else if (serverFreeAt >= breakStart) {
-        // ya paso el break
-        serverFreeAt = serverFreeAt + breakDur;
-        breakTaken = true;
-        start = Math.max(serverFreeAt, arrival);
-      }
+    // aplicar break ANTES de iniciar un servicio, si corresponde
+    if (!breakTaken && start >= breakStart) {
+      // si el servidor estaba libre en breakStart, el break arranca en breakStart
+      // si estaba ocupado (serverFreeAt > breakStart), arranca al terminar ese servicio (serverFreeAt)
+      const breakBegin = serverFreeAt <= breakStart ? breakStart : serverFreeAt;
+      serverFreeAt = breakBegin + breakDur;
+      breakTaken = true;
+
+      // recalcular inicio real
+      start = Math.max(serverFreeAt, arrival);
     }
 
     const service = sampleService(rnd(), team);
@@ -131,16 +136,19 @@ function simulateOneNight(params: TruckQueueParams, team: number, seed: number):
     totalWait += Math.max(0, start - arrival);
     served++;
 
-    firstStart = Math.min(firstStart, start);
     lastFinish = Math.max(lastFinish, finish);
     serverFreeAt = finish;
   }
 
-  if (!isFinite(firstStart)) firstStart = 0;
+  // --- Métricas de tiempo (fiel al libro) ---
+  // Operación del almacén: desde 11:00 (t=0) como mínimo hasta el fin de la jornada normal,
+  // y si termina después, hasta lastFinish.
+  const operationMin = Math.max(jornadaEnd, lastFinish);
 
+  // Tiempo extra: solo si termina después de la jornada
   const overtimeMin = Math.max(0, lastFinish - jornadaEnd);
-  const operationMin = Math.max(0, lastFinish - firstStart);
 
+  // --- Costos ---
   const salarioNormal = team * params.duracionJornadaHoras * params.salarioHora;
   const salarioExtra = team * (overtimeMin / 60) * params.salarioExtraHora;
   const costoEspera = (totalWait / 60) * params.costoEsperaCamionHora;
@@ -207,16 +215,16 @@ function simulateMany(params: TruckQueueParams, team: number, n: number, seedBas
 
 export function simulateTruckQueue(params: TruckQueueParams): TruckQueueSummary {
   const n = Math.max(1, Math.floor(params.nTurnos || 1));
-  const seedBase = Date.now();
+  const seedBase = (typeof params.seed === 'number' ? params.seed : Date.now()) >>> 0;
 
-  const teams = [3, 4, 5, 6];
+  const teams = params.personas === 'AUTO' ? [3, 4, 5, 6] : [params.personas];
   const porEquipo: Record<number, TruckQueueCost> = {};
 
   for (const t of teams) {
     porEquipo[t] = simulateMany(params, t, n, seedBase);
   }
 
-  let best = 3;
+  let best = teams[0];
   for (const t of teams) {
     if (porEquipo[t].costoTotal < porEquipo[best].costoTotal) best = t;
   }
