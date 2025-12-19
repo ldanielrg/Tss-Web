@@ -96,8 +96,7 @@ const TruckQueueStepOnePanel: React.FC<Props> = ({ params }) => {
           </div>
 
           <p className="text-xs text-gray-500">
-            Nota: FinÚltimo es el tiempo (en minutos desde el inicio) cuando termina de descargarse el último camión
-            atendido en la noche.
+            Nota: FinÚltimo es el tiempo (en minutos desde el inicio) cuando termina de descargarse el último camión.
           </p>
         </div>
       </div>
@@ -130,8 +129,7 @@ const TruckQueueStepOnePanel: React.FC<Props> = ({ params }) => {
         </div>
 
         <p className="text-xs text-gray-500 mt-2">
-          En el Paso 2 se mostrarán las distribuciones (tablas) y cómo se generan los tiempos mediante la transformada
-          inversa.
+          En el Paso 2 se muestran las distribuciones discretas y cómo se usa R para seleccionar valores.
         </p>
       </div>
     </div>
