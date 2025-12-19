@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Play, Clock, Server } from 'lucide-react';
 import Tooltip from './Tooltip';
 import ServiceSystemsChart from './ServiceSystemsChart';
@@ -13,6 +13,11 @@ import {
 } from '../utils/serviceSystemsSimulator';
 
 type Kind = 'serie' | 'banco' | 'estacionamiento';
+
+type Props = {
+  initialKind?: Kind;
+  showSelector?: boolean;
+};
 
 const DEFAULT_SERIE: SerieParams = {
   lambdaPerHour: 20,
@@ -38,8 +43,11 @@ const DEFAULT_EST: EstacionamientoParams = {
   cierreHours: 8,
 };
 
-export default function ServiceSystemsModule() {
-  const [kind, setKind] = useState<Kind>('serie');
+export default function ServiceSystemsModule({
+  initialKind = 'serie',
+  showSelector = true,
+}: Props) {
+  const [kind, setKind] = useState<Kind>(initialKind);
 
   const [serie, setSerie] = useState<SerieParams>({ ...DEFAULT_SERIE });
   const [banco, setBanco] = useState<BancoParams>({ ...DEFAULT_BANCO });
@@ -48,6 +56,14 @@ export default function ServiceSystemsModule() {
   const [result, setResult] = useState<SimulationOutput | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+    useEffect(() => {
+    setKind(initialKind);
+    setResult(null);
+    setError(null);
+  }, [initialKind]);
+
+  const MIN_PER_H = 60;
 
   const theme = useMemo(() => {
     if (kind === 'serie')
@@ -109,71 +125,136 @@ export default function ServiceSystemsModule() {
     <div className="space-y-6">
       {/* Card de título (sin banner para evitar doble panel) */}
 
+      {showSelector && (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center space-x-3">
+            <div className="w-5 h-5 rounded-lg flex items-center justify-center">
+              <Server className="w-6 h-6 text-indigo-600" />
+            </div>
+            <div className="text-left">
+              <h3 className="text-lg font-semibold">Seleccionar Sistema</h3>
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-600 mt-1">Serie / Banco / Estacionamiento</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setKind('serie');
+                setResult(null);
+              }}
+              className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                kind === 'serie' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="font-medium">Serie</div>
+              <div className="text-xs text-gray-500">2 estaciones (Exp + Uniforme)</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setKind('banco');
+                setResult(null);
+              }}
+              className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                kind === 'banco' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="font-medium">Banco</div>
+              <div className="text-xs text-gray-500">N cajeros, servicio uniforme</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setKind('estacionamiento');
+                setResult(null);
+              }}
+              className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                kind === 'estacionamiento' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="font-medium">Estacionamiento</div>
+              <div className="text-xs text-gray-500">Capacidad finita (sin cola)</div>
+            </button>
+          </div>
+        </div>
+      )}
+      <ServiceHeader kind={kind} />
+      <TheoryPanel kind={kind} serie={serie} banco={banco} est={est} />
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Panel de parámetros */}
         <div className="space-y-4">
           <div className="bg-white p-6 rounded-lg shadow-md">
+            {showSelector && (
+              <>
+                <div className="flex items-center space-x-3">
+                  <div className="w-5 h-5 rounded-lg flex items-center justify-center">
+                    <Server className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold">Seleccionar Sistema</h3>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600">Serie / Banco / Estacionamiento</p>
+
+                <div className="grid grid-cols-1 gap-2 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKind('serie');
+                      setResult(null);
+                    }}
+                    className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                      kind === 'serie' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium">Serie</div>
+                    <div className="text-xs text-gray-500">2 estaciones (Exp + Uniforme)</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKind('banco');
+                      setResult(null);
+                    }}
+                    className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                      kind === 'banco' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium">Banco</div>
+                    <div className="text-xs text-gray-500">N cajeros, servicio uniforme</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setKind('estacionamiento');
+                      setResult(null);
+                    }}
+                    className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
+                      kind === 'estacionamiento' ? theme.pill : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium">Estacionamiento</div>
+                    <div className="text-xs text-gray-500">Capacidad finita (sin cola)</div>
+                  </button>
+                </div>
+              </>
+            )}
+
             <div className="flex items-center space-x-3">
-              <div className="w-5 h-5 rounded-lg flex items-center justify-center">
-                <Server className="w-6 h-6 text-indigo-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-lg font-semibold">Seleccionar Sistema</h3>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600">Serie / Banco / Estacionamiento</p>
-
-            <div className="grid grid-cols-1 gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setKind('serie');
-                  setResult(null);
-                }}
-                className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
-                  kind === 'serie' ? theme.pill : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-medium">Serie</div>
-                <div className="text-xs text-gray-500">2 estaciones (Exp + Uniforme)</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setKind('banco');
-                  setResult(null);
-                }}
-                className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
-                  kind === 'banco' ? theme.pill : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-medium">Banco</div>
-                <div className="text-xs text-gray-500">N cajeros, servicio uniforme</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setKind('estacionamiento');
-                  setResult(null);
-                }}
-                className={`px-3 py-3 rounded-lg border-2 transition-colors text-left ${
-                  kind === 'estacionamiento' ? theme.pill : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-medium">Estacionamiento</div>
-                <div className="text-xs text-gray-500">Capacidad finita (sin cola)</div>
-              </button>
-              <hr className="my-4" />
-              <div className="flex items-center space-x-3">
               <div className="w-5 h-5 rounded-lg flex items-center justify-center">
                 <Server className="w-6 h-6 text-indigo-600" />
               </div>
               <div className="text-left">
                 <h3 className="text-lg font-semibold">Parámetros de Sistema de Servicio</h3>
               </div>
-            </div>
             </div>
 
             {error && (
@@ -402,6 +483,248 @@ export default function ServiceSystemsModule() {
     </div>
   );
 }
+
+function ServiceHeader({ kind }: { kind: Kind }) {
+  const title =
+    kind === 'serie'
+      ? 'Servicio: Serie (2 estaciones)'
+      : kind === 'banco'
+      ? 'Servicio: Banco (N cajeros)'
+      : 'Servicio: Estacionamiento (capacidad finita)';
+
+  const desc =
+    kind === 'serie'
+      ? 'Simulación de un sistema en serie con llegadas Poisson: estación 1 con servicio exponencial y estación 2 con servicio uniforme.'
+      : kind === 'banco'
+      ? 'Simulación de una cola con llegadas Poisson y N servidores en paralelo, con tiempos de servicio uniformes.'
+      : 'Simulación de un estacionamiento sin cola: si está lleno, las llegadas se pierden. Duraciones de estadía uniformes.';
+
+  return (
+    <div className="mt-10">
+      <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
+      <p className="text-gray-600 mt-2">{desc}</p>
+    </div>
+  );
+}
+
+
+function TheoryPanel({
+  kind,
+  serie,
+  banco,
+  est,
+}: {
+  kind: Kind;
+  serie: SerieParams;
+  banco: BancoParams;
+  est: EstacionamientoParams;
+}) {
+  const MIN_PER_H = 60;
+
+  const fmt = (x: number, d = 3) => (Number.isFinite(x) ? x.toFixed(d) : '-');
+
+  const palette =
+    kind === 'serie'
+      ? {
+          wrap: 'bg-indigo-50 border-indigo-200',
+          title: 'text-indigo-900',
+          subtitle: 'text-indigo-700',
+        }
+      : kind === 'banco'
+      ? {
+          wrap: 'bg-green-50 border-green-200',
+          title: 'text-green-900',
+          subtitle: 'text-green-700',
+        }
+      : {
+          wrap: 'bg-orange-50 border-orange-200',
+          title: 'text-orange-900',
+          subtitle: 'text-orange-700',
+        };
+
+  const lambdaPerHour =
+    kind === 'serie' ? serie.lambdaPerHour : kind === 'banco' ? banco.lambdaPerHour : est.lambdaPerHour;
+
+  const cierreHours =
+    kind === 'serie' ? serie.cierreHours : kind === 'banco' ? banco.cierreHours : est.cierreHours;
+
+  // interarribo en minutos: Exp(rate = lambda/60)
+  const ratePerMin = lambdaPerHour / MIN_PER_H;
+  const meanInterMin = ratePerMin > 0 ? 1 / ratePerMin : 0;
+
+  return (
+    <div className={`mt-4 p-6 rounded-lg border ${palette.wrap}`}>
+
+
+      {/* 2 cards arriba */}
+      <div className="grid md:grid-cols-2 gap-4 mt-5">
+        {/* Card 1: Modelo / Distribuciones */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <h4 className="font-semibold text-gray-900">Modelo del sistema</h4>
+
+          <div className="mt-3">
+            <div className="text-sm font-medium text-gray-800">Llegadas (común a los 3)</div>
+            <pre className="mt-2 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`Proceso de llegadas: Poisson(λ por hora)
+
+Interarribo (min):  T = -ln(U) / (λ/60)    con U ~ U(0,1)
+
+Cierre:
+- Solo se generan llegadas si t <= cierre
+- cierre = ${fmt(cierreHours, 2)} horas`}
+            </pre>
+            <div className="text-xs text-gray-600 mt-2">
+              Con λ = {fmt(lambdaPerHour, 2)}/h ⇒ E[Interarribo] ≈ {fmt(meanInterMin, 3)} min
+            </div>
+          </div>
+
+          {kind === 'serie' && (
+            <div className="mt-4">
+              <div className="text-sm font-medium text-gray-800">Servicio</div>
+              <pre className="mt-2 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`Estación 1:  S1 ~ Exponencial(media = μ̄1)
+S1 (min) = -μ̄1 * ln(U)
+
+Estación 2:  S2 ~ Uniforme(a,b)
+S2 (min) = a + (b-a)*U
+
+Parámetros actuales:
+μ̄1 = ${fmt(serie.mu1MeanMin, 2)} min
+a  = ${fmt(serie.s2MinMin, 2)} min
+b  = ${fmt(serie.s2MaxMin, 2)} min`}
+              </pre>
+            </div>
+          )}
+
+          {kind === 'banco' && (
+            <div className="mt-4">
+              <div className="text-sm font-medium text-gray-800">Servicio</div>
+              <pre className="mt-2 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`Banco con N cajeros (una sola cola)
+
+Servicio: S ~ Uniforme(a,b)
+S (min) = a + (b-a)*U
+
+Parámetros actuales:
+N = ${Math.max(1, Math.floor(banco.numeroCajeros))}
+a = ${fmt(banco.sMinMin, 2)} min
+b = ${fmt(banco.sMaxMin, 2)} min`}
+              </pre>
+            </div>
+          )}
+
+          {kind === 'estacionamiento' && (
+            <div className="mt-4">
+              <div className="text-sm font-medium text-gray-800">Regla del sistema</div>
+              <pre className="mt-2 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`Capacidad finita C, sin cola:
+
+Si ocupados < C  -> entra (Atendido)
+Si ocupados = C  -> se pierde (Perdido)
+
+Duración: D ~ Uniforme(a,b)
+D (min) = a + (b-a)*U
+
+Parámetros actuales:
+C = ${Math.max(1, Math.floor(est.capacidad))}
+a = ${fmt(est.sMinMin, 2)} min
+b = ${fmt(est.sMaxMin, 2)} min`}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        {/* Card 2: Métricas / Fórmulas */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <h4 className="font-semibold text-gray-900">Fórmulas que calcula el script</h4>
+
+          {kind === 'serie' && (
+            <>
+              <pre className="mt-3 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`Se actualizan áreas por tramos:
+areaQ1 += |cola1| * Δt
+areaQ2 += |cola2| * Δt
+areaB1 += 1{s1 ocupado} * Δt
+areaB2 += 1{s2 ocupado} * Δt
+
+Al final (T = tiempo real hasta vaciar el sistema):
+Lq1  = areaQ1 / T
+Lq2  = areaQ2 / T
+ρ1   = areaB1 / T
+ρ2   = areaB2 / T
+W̄(min) = (Σ (fin2 - llegada)) / atendidos`}
+              </pre>
+              <div className="text-xs text-gray-600 mt-2">
+                Nota: el sistema sigue después del cierre hasta terminar a todos (T = reloj final).
+              </div>
+            </>
+          )}
+
+          {kind === 'banco' && (
+            <>
+              <pre className="mt-3 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`Se actualizan áreas por tramos:
+areaQ   += |cola| * Δt
+occ      = #cajeros ocupados
+areaSys += (|cola| + occ) * Δt
+
+Al final (T = tiempo real hasta vaciar):
+Lq = areaQ / T
+Ls = areaSys / T
+W̄(min) = (Σ (salida - llegada)) / atendidos
+
+Además por cliente (en tabla):
+TiempoCola = inicioServ - llegada
+TiempoServ = salida - inicioServ
+TiempoSist = salida - llegada`}
+              </pre>
+            </>
+          )}
+
+          {kind === 'estacionamiento' && (
+            <>
+              <pre className="mt-3 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`IMPORTANTE: aquí se integra EXACTAMENTE hasta el cierre.
+
+tiempoEnEstado[ocup] += Δt     (para ocup=0..C)
+tiempoAcumOcup       += ocup * Δt
+
+T = cierre (min)
+
+p_lleno = tiempoEnEstado[C] / T
+p_libre = 1 - p_lleno
+ocupados_prom = tiempoAcumOcup / T
+libres_prom   = C - ocupados_prom
+%perdidos = 100*(perdidos/llegadas)`}
+              </pre>
+              <div className="text-xs text-gray-600 mt-2">
+                Nota: pueden existir salidas después del cierre, pero las probabilidades se miden hasta el cierre.
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Card inferior: algoritmo */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4 mt-4">
+        <h4 className="font-semibold text-gray-900">Algoritmo de simulación (eventos)</h4>
+        <pre className="mt-3 text-xs bg-gray-50 border border-gray-200 rounded-md p-3 overflow-auto">
+{`1) Inicializar lista de eventos (ordenada por tiempo)
+2) Generar 1ra llegada con ExpInterarribo (si <= cierre)
+3) Mientras haya eventos:
+   - Sacar el evento más próximo
+   - Actualizar áreas/tiempos con Δt
+   - Ejecutar lógica del evento:
+     SERIE: LLEG -> entra cola1 ; FIN1 -> pasa a cola2 ; FIN2 -> sale
+     BANCO: LLEG -> si hay cajero libre inicia, si no a cola ; SAL -> libera cajero y toma siguiente
+     EST:   LLEG -> si hay lugar entra, si no se pierde ; SAL -> libera lugar
+4) Calcular métricas con áreas / T y promedios por cliente`}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
 
 function Field({
   label,
