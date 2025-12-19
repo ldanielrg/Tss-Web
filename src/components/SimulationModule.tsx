@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp } from 'lucide-react'; // AGREGUE YO
+import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp, Wrench } from 'lucide-react'; // AGREGUE YO
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 import { Outlet } from 'react-router-dom';
@@ -23,7 +23,8 @@ import ComposicionModule from './ComposicionModule';
 import { InverseTransform } from '../pages/InverseTransform';
 import { MagazineVendor } from '../pages/MagazineVendor';
 import { InvestmentProject } from '../pages/InvestmentProject';
-
+import UnloadingTeamModule from './UnloadingTeamModule';
+import MachineMechanicModule from './MachineMechanicModule';
 
 const SimulationModule: React.FC = () => {
   const [selectedProblem, setSelectedProblem] = useState<
@@ -38,6 +39,8 @@ const SimulationModule: React.FC = () => {
     | 'magazine-vendor'
     | 'investment-project'
     | 'composicion'
+    | 'unloading-team'
+    | 'machine-mechanic'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -338,6 +341,41 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
 
+          {/* Botón problema 1 */}
+          <button
+            onClick={() => setSelectedProblem('machine-mechanic')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'machine-mechanic'
+                ? 'border-violet-500 bg-violet-50 text-violet-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Wrench className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Máquinas por mecánico</h4>
+                <p className="text-sm text-gray-600">Fallas + Reparación + Costos</p>
+              </div>
+            </div>
+          </button>
+
+          {/* Botón problema 2 (el que ya tienes) */}
+          <button
+            onClick={() => setSelectedProblem('unloading-team')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'unloading-team'
+                ? 'border-orange-500 bg-orange-50 text-orange-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Truck className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Equipo de descarga óptimo</h4>
+                <p className="text-sm text-gray-600">Poisson + Uniforme + Costos</p>
+              </div>
+            </div>
+          </button>
 
 
         </div>
@@ -364,7 +402,12 @@ const SimulationModule: React.FC = () => {
         />
       ) : selectedProblem === 'composicion' ? (
         <ComposicionModule />
+      ) : selectedProblem === 'machine-mechanic' ? (
+        <MachineMechanicModule />
+      ) :   selectedProblem === 'unloading-team' ? (
+        <UnloadingTeamModule />
       ) : (
+
     
 
       <div className= "grid lg:grid-cols-3 gap-6">
