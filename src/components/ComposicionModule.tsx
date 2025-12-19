@@ -91,16 +91,19 @@ export default function ComposicionModule() {
     }, 200);
   };
 
-
   return (
     <div className="space-y-6">
-      {/* ===== Encabezado + Fundamento Matemático (como en tus ejemplos) ===== */}
-      <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900">Método de Composición – Distribución Trapezoidal</h2>
-        <p className="text-gray-700 mt-1">
+        {/* ===== Encabezado (FUERA del panel, como Inventarios) ===== */}
+      <div>
+        <h2 className="text-3xl font-bold text-gray-900">Método de Composición – Distribución Trapezoidal</h2>
+        <p className="text-gray-600 mt-2">
           Generación de una variable aleatoria X con densidad trapezoidal usando composición en 3 sub-distribuciones:
           f₁ (triangular creciente), f₂ (uniforme) y f₃ (triangular decreciente).
         </p>
+      </div>
+      {/* ===== Fundamento Matemático (como en tus ejemplos) ===== */}
+      <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
+
 
         <div className="grid md:grid-cols-2 gap-6 mt-5">
           {/* Densidad por partes */}
