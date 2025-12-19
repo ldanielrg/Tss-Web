@@ -24,10 +24,11 @@ ChartJS.register(
 );
 
 interface DistributionChartProps {
+  kind: 'continuous' | 'discrete';
   histogramData: {
     bins: number[];
     frequencies: number[];
-    density: number[];
+    density: number[]; // para discretas lo usaremos como prob. empírica
   };
   theoreticalData: {
     x: number[];
@@ -36,13 +37,23 @@ interface DistributionChartProps {
   title: string;
 }
 
-const DistributionChart: React.FC<DistributionChartProps> = ({ histogramData, theoreticalData, title }) => {
+const DistributionChart: React.FC<DistributionChartProps> = ({
+  kind,
+  histogramData,
+  theoreticalData,
+  title
+}) => {
+  const labels =
+    kind === 'discrete'
+      ? histogramData.bins.map(b => `${Math.round(b)}`)
+      : histogramData.bins.map(b => b.toFixed(2));
+
   const data = {
-    labels: histogramData.bins.map(bin => bin.toFixed(2)),
+    labels,
     datasets: [
       {
         type: 'bar' as const,
-        label: 'Histograma (Datos Simulados)',
+        label: kind === 'discrete' ? 'Frecuencia relativa (simulada)' : 'Histograma (densidad simulada)',
         data: histogramData.density,
         backgroundColor: 'rgba(37, 99, 235, 0.6)',
         borderColor: 'rgba(37, 99, 235, 1)',
@@ -51,12 +62,12 @@ const DistributionChart: React.FC<DistributionChartProps> = ({ histogramData, th
       },
       {
         type: 'line' as const,
-        label: 'Densidad Teórica',
+        label: kind === 'discrete' ? 'PMF teórica' : 'Densidad teórica (PDF)',
         data: theoreticalData.y,
         borderColor: 'rgba(234, 88, 12, 1)',
         backgroundColor: 'rgba(234, 88, 12, 0.1)',
         borderWidth: 3,
-        pointRadius: 0,
+        pointRadius: kind === 'discrete' ? 3 : 0,
         yAxisID: 'y',
       },
     ],
@@ -65,38 +76,25 @@ const DistributionChart: React.FC<DistributionChartProps> = ({ histogramData, th
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
+      legend: { position: 'top' as const },
       title: {
         display: true,
         text: title,
-        font: {
-          size: 16,
-          weight: 'bold' as const,
-        },
+        font: { size: 16, weight: 'bold' as const },
       },
     },
     scales: {
       x: {
-        title: {
-          display: true,
-          text: 'Valor',
-        },
+        title: { display: true, text: kind === 'discrete' ? 'k' : 'Valor' },
       },
       y: {
         type: 'linear' as const,
         display: true,
         position: 'left' as const,
-        title: {
-          display: true,
-          text: 'Densidad',
-        },
+        title: { display: true, text: kind === 'discrete' ? 'Probabilidad' : 'Densidad' },
       },
     },
-    interaction: {
-      intersect: false,
-    },
+    interaction: { intersect: false },
   };
 
   return (
