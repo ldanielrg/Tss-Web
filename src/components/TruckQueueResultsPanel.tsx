@@ -58,6 +58,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
   const [teamForTurns, setTeamForTurns] = useState<number>(3);
   const [traceTeam, setTraceTeam] = useState<TruckTeamSize>(3);
   const [nightDetail, setNightDetail] = useState<TruckQueueNightDetail | null>(null);
+  const [simulationCounter, setSimulationCounter] = useState<number>(0);
 
   const teamsToShow = useMemo<TruckTeamSize[]>(() => {
     if (!summary) return [3, 4, 5, 6];
@@ -82,6 +83,12 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
   useEffect(() => {
     if (!teamsToShow.includes(traceTeam)) setTraceTeam(teamsToShow[0]);
   }, [teamsToShow, traceTeam]);
+
+  // Resetear contador y simulación cuando cambia el equipo
+  useEffect(() => {
+    setSimulationCounter(0);
+    setNightDetail(null);
+  }, [traceTeam]);
 
   // ✅ returns después de hooks
   if (isSimulating) {
@@ -169,7 +176,9 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
   const runOneNightDetail = () => {
     if (!params) return;
     const seedBase = (typeof params.seed === 'number' ? params.seed : 12345) >>> 0;
-    const detail = simulateTruckQueueOneNightDetail(params, traceTeam, seedBase + traceTeam * 1000);
+    const newCount = simulationCounter + 1;
+    setSimulationCounter(newCount);
+    const detail = simulateTruckQueueOneNightDetail(params, traceTeam, seedBase + traceTeam * 1000 + newCount);
     setNightDetail(detail);
   };
 
