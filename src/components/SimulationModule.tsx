@@ -21,6 +21,9 @@ import ConposicionTriangularModule from './ComposicionTriangularModule';
 // ✅ NUEVO: tu ejercicio (Ej 1–8 Mezcla Exponencial por Composición)
 import ComposicionExponencialMixtureModule from './ComposicionExponencialMixtureModule';
 
+// ✅ NUEVO: Mezcla Binomial por Composición (Ejercicio nuevo)
+import ComposicionBinomialMixtureModule from './ComposicionBinomialMixtureModule';
+
 
 // Nuevas páginas
 import { InverseTransform } from '../pages/InverseTransform';
@@ -44,6 +47,7 @@ const SimulationModule: React.FC = () => {
     | 'composicion'
     | 'composicion-triangular'
     | 'composicion-exp-mixture'   // ✅ NUEVO
+    | 'composicion-binomial-mixture' // ✅ NUEVO (agregado)
     | 'unloading-team'
     | 'machine-mechanic'
   >('queue');
@@ -229,8 +233,25 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* Rechazo (si lo agregas luego, descomenta y usa tu key) */}
+            {/* ✅ NUEVO: Mezcla Binomial por Composición */}
+            <button
+              onClick={() => setSelectedProblem('composicion-binomial-mixture')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'composicion-binomial-mixture'
+                  ? 'border-fuchsia-500 bg-fuchsia-50 text-fuchsia-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición — Mezcla Binomial</h4>
+                  <p className="text-sm text-gray-600">p·Bin(n,θ1) + (1−p)·Bin(n,θ2)</p>
+                </div>
+              </div>
+            </button>
 
+            {/* Rechazo (si lo agregas luego, descomenta y usa tu key) */}
           </div>
         </div>
 
@@ -429,7 +450,9 @@ const SimulationModule: React.FC = () => {
         <ConposicionTriangularModule />
       ) : selectedProblem === 'composicion-exp-mixture' ? (   // ✅ NUEVO
         <ComposicionExponencialMixtureModule />
-      ): selectedProblem === 'machine-mechanic' ? (
+      ) : selectedProblem === 'composicion-binomial-mixture' ? ( // ✅ NUEVO (agregado)
+        <ComposicionBinomialMixtureModule />
+      ) : selectedProblem === 'machine-mechanic' ? (
         <MachineMechanicModule />
       ) :   selectedProblem === 'unloading-team' ? (
         <UnloadingTeamModule />
