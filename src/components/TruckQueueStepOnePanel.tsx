@@ -32,7 +32,7 @@ const TruckQueueStepOnePanel: React.FC<Props> = ({ params }) => {
 
       <div className="bg-white rounded-lg border p-3">
         <h5 className="text-sm font-semibold text-gray-800 mb-2">Línea de tiempo (horarios)</h5>
-        <div className="grid md:grid-cols-2 gap-2 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 text-sm">
           <div className="p-2 rounded bg-gray-50 border">
             <div className="font-medium">Inicio</div>
             <div className="text-gray-700">{fmtTime(params.horaInicio)} (t = 0)</div>
@@ -107,10 +107,10 @@ const TruckQueueStepOnePanel: React.FC<Props> = ({ params }) => {
           <table className="min-w-full text-xs md:text-sm border">
             <tbody>
               <tr>
-                <td className="border px-2 py-2 font-medium">Salario/Hora</td>
-                <td className="border px-2 py-2">Bs. {params.salarioHora}</td>
-                <td className="border px-2 py-2 font-medium">Salario Extra/Hora</td>
-                <td className="border px-2 py-2">Bs. {params.salarioExtraHora}</td>
+                <td className="border px-2 py-2 font-medium text-xs md:text-sm">Salario/Hora</td>
+                <td className="border px-2 py-2 text-xs md:text-sm">Bs. {params.salarioHora}</td>
+                <td className="border px-2 py-2 font-medium text-xs md:text-sm">Salario Extra/Hora</td>
+                <td className="border px-2 py-2 text-xs md:text-sm">Bs. {params.salarioExtraHora}</td>
               </tr>
               <tr>
                 <td className="border px-2 py-2 font-medium">Espera Camión/H</td>

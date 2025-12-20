@@ -226,8 +226,8 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
                   TABLA DE SIMULACIÓN PARA {traceTeam} PERSONAS, QUE ESTÁN EN SERVICIO
                 </div>
 
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-xs md:text-sm border-t">
+                <div className="overflow-x-auto -mx-4 md:mx-0">
+                  <table className="min-w-full text-xs sm:text-sm border-t">
                     <thead className="bg-purple-600 text-white">
                       <tr>
                         <th className="border px-2 py-2">Aleatorio</th>
@@ -327,7 +327,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
                   <div className="bg-white rounded-lg border p-3 space-y-2">
                     <h5 className="text-sm font-semibold text-gray-800">Paso 4: Cálculo de costos (desde la corrida)</h5>
 
-                    <div className="grid md:grid-cols-2 gap-2 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
                       <div className="p-2 bg-gray-50 border rounded">
                         <div className="font-medium">ΣW</div>
                         <div>{minutesToDuration(sumW)}</div>
@@ -346,8 +346,8 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full text-xs md:text-sm border mt-2">
+                    <div className="overflow-x-auto -mx-3 md:mx-0">
+                      <table className="min-w-full text-xs sm:text-sm border mt-2">
                         <thead className="bg-gray-50">
                           <tr>
                             <th className="border px-2 py-2">Componente</th>
@@ -398,8 +398,8 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm border">
+        <div className="overflow-x-auto -mx-4 md:mx-0">
+          <table className="min-w-full text-xs sm:text-sm border">
             <thead className="bg-gray-50">
               <tr>
                 <th className="border px-2 py-2">Equipo</th>
@@ -454,11 +454,11 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
             <>
               <div className="flex flex-col md:flex-row gap-3 md:items-end justify-between">
                 <div className="w-full md:w-64">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Equipo para ver turnos</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Equipo para ver turnos</label>
                   <select
                     value={teamForTurns}
                     onChange={(e) => setTeamForTurns(parseInt(e.target.value, 10))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   >
                     {teamsToShow.map((t) => (
                       <option key={t} value={t}>
@@ -472,8 +472,8 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-xs md:text-sm border">
+              <div className="overflow-x-auto -mx-4 md:mx-0">
+                <table className="min-w-full text-xs sm:text-sm border">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="border px-2 py-2">Turno</th>

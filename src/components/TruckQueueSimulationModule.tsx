@@ -207,7 +207,7 @@ const TruckQueueSimulationModule: React.FC<Props> = ({
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Salario/Hora (Bs.)</label>
               <input
@@ -231,7 +231,7 @@ const TruckQueueSimulationModule: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Espera camión/H (Bs.)</label>
               <input
@@ -259,7 +259,7 @@ const TruckQueueSimulationModule: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Jornada (horas)</label>
               <input
