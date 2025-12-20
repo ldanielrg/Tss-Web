@@ -6,7 +6,7 @@ import Tooltip from './Tooltip';
 // Camiones
 import TruckQueueSimulationModule from './TruckQueueSimulationModule';
 import TruckQueueResultsPanel from './TruckQueueResultsPanel';
-import type { TruckQueueSummary } from '../types/truckQueueSimulation';
+import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSimulation'; // ✅ CAMBIO: agregué TruckQueueParams
 
 // Inventario (q,R)
 import InventorySimulationModule from './InventorySimulationModule'; // AGREGUE YO
@@ -60,6 +60,9 @@ const SimulationModule: React.FC = () => {
 
   // Camiones
   const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
+
+  // ✅ NUEVO: guardar params del módulo camiones para usar en panel derecho (Paso 3/4)
+  const [truckParams, setTruckParams] = useState<TruckQueueParams | null>(null);
 
   // Inventario (q,R)
   const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null); // AGREGUE YO
@@ -374,8 +377,6 @@ const SimulationModule: React.FC = () => {
               </div>
             </div>
           </button>
-
-
         </div>
 
       </div>
@@ -405,9 +406,6 @@ const SimulationModule: React.FC = () => {
       ) :   selectedProblem === 'unloading-team' ? (
         <UnloadingTeamModule />
       ) : (
-
-    
-
       <div className= "grid lg:grid-cols-3 gap-6">
         <div className="space-y-4">
           {selectedProblem === 'queue' && (
@@ -605,8 +603,10 @@ const SimulationModule: React.FC = () => {
               onSimulated={(summary) => {
                 setTruckSummary(summary);
               }}
+              onParamsChange={(p) => setTruckParams(p)} // ✅ NUEVO
             />
           )}
+
           {/* Inventario (q,R) */}
           {selectedProblem === 'inventoryRQ' && (
             <InventorySimulationModule
@@ -624,6 +624,7 @@ const SimulationModule: React.FC = () => {
             <TruckQueueResultsPanel
               summary={truckSummary}
               isSimulating={isSimulating}
+              params={truckParams} // ✅ NUEVO
             />
           )}
 
