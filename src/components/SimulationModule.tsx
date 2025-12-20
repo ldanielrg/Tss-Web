@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp, Wrench } from 'lucide-react'; // AGREGUE YO
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
-import { Outlet } from 'react-router-dom';
 
 // Camiones
 import TruckQueueSimulationModule from './TruckQueueSimulationModule';
@@ -61,7 +60,6 @@ const SimulationModule: React.FC = () => {
 
   // Camiones
   const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
-  const [truckPersonas, setTruckPersonas] = useState<'AUTO' | 3 | 4 | 5 | 6>('AUTO');
 
   // Inventario (q,R)
   const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null); // AGREGUE YO
@@ -604,13 +602,11 @@ const SimulationModule: React.FC = () => {
             <TruckQueueSimulationModule
               isSimulating={isSimulating}
               setIsSimulating={setIsSimulating}
-              onSimulated={(summary, personas) => {
+              onSimulated={(summary) => {
                 setTruckSummary(summary);
-                setTruckPersonas(personas);
               }}
             />
           )}
-
           {/* Inventario (q,R) */}
           {selectedProblem === 'inventoryRQ' && (
             <InventorySimulationModule
@@ -628,7 +624,6 @@ const SimulationModule: React.FC = () => {
             <TruckQueueResultsPanel
               summary={truckSummary}
               isSimulating={isSimulating}
-              personas={truckPersonas}
             />
           )}
 
