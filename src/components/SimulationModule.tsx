@@ -17,6 +17,7 @@ import type { InventorySimulationSummary } from '../types/inventorySimulation'; 
 //Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
 import ComposicionModule from './ComposicionModule';
+import ConposicionTriangularModule from './ComposicionTriangularModule';
 
 
 // Nuevas páginas
@@ -39,6 +40,7 @@ const SimulationModule: React.FC = () => {
     | 'magazine-vendor'
     | 'investment-project'
     | 'composicion'
+    | 'composicion-triangular'
     | 'unloading-team'
     | 'machine-mechanic'
   >('queue');
@@ -139,249 +141,247 @@ const SimulationModule: React.FC = () => {
         </p>
       </div>
 
-
-
       {/* Selector de problema */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Seleccionar Problema de Simulación</h3>
-        <div className="grid md:grid-cols-4 gap-4">
-          <button
-            onClick={() => setSelectedProblem('queue')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'queue'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Users className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Líneas de Espera (M/M/1)</h4>
-                <p className="text-sm text-gray-600">Sistema de cola con llegadas Poisson</p>
+
+        {/* ============ PARTE 1 ============ */}
+        <div className="mb-8">
+          <div className="mb-3">
+            <h4 className="text-sm font-semibold text-gray-900">Parte 1</h4>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            {/* Transformada Inversa */}
+            <button
+              onClick={() => setSelectedProblem('inverse-transform')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'inverse-transform'
+                  ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Transformada Inversa</h4>
+                  <p className="text-sm text-gray-600">Generación de variables no estándar</p>
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
 
-          <button
-            onClick={() => setSelectedProblem('inventory')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'inventory'
-                ? 'border-green-500 bg-green-50 text-green-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Package className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Gestión de Inventarios</h4>
-                <p className="text-sm text-gray-600">Sistema EOQ estocástico</p>
+            {/* Composición Trapezoidal */}
+            <button
+              onClick={() => setSelectedProblem('composicion')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'composicion'
+                  ? 'border-teal-500 bg-teal-50 text-teal-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición Trapezoidal</h4>
+                  <p className="text-sm text-gray-600">Trapezoidal (f₁,f₂,f₃)</p>
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
 
-          {/* Botón camiones */}
-          <button
-            onClick={() => setSelectedProblem('camiones')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'camiones'
-                ? 'border-orange-500 bg-orange-50 text-orange-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Truck className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Colas de Camiones</h4>
-                <p className="text-sm text-gray-600">Descarga nocturna y costos</p>
+            {/* Composición Triangular */}
+            <button
+              onClick={() => setSelectedProblem('composicion-triangular')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'composicion-triangular'
+                  ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición Triangular</h4>
+                  <p className="text-sm text-gray-600">Triangular (f₁, f₂) + Inversa</p>
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
 
-          {/* Botón inventario (q,R) */}
-          <button
-            onClick={() => setSelectedProblem('inventoryRQ')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'inventoryRQ'
-                ? 'border-amber-500 bg-amber-50 text-amber-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Package className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Inventario (q, R)</h4>
-                <p className="text-sm text-gray-600">Búsqueda óptima por simulación</p>
-              </div>
-            </div>
-          </button>
+            {/* Rechazo (si lo agregas luego, descomenta y usa tu key) */}
 
-          {/* Servicios - Serie */}
-          <button
-            onClick={() => setSelectedProblem('service-serie')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'service-serie'
-                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Server className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Servicio: Serie</h4>
-                <p className="text-sm text-gray-600">2 estaciones (Exp + Uniforme)</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Servicios - Banco */}
-          <button
-            onClick={() => setSelectedProblem('service-banco')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'service-banco'
-                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Server className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Servicio: Banco</h4>
-                <p className="text-sm text-gray-600">N cajeros, servicio uniforme</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Servicios - Estacionamiento */}
-          <button
-            onClick={() => setSelectedProblem('service-estacionamiento')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'service-estacionamiento'
-                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Server className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Servicio: Estacionamiento</h4>
-                <p className="text-sm text-gray-600">Capacidad finita (sin cola)</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Botón Transformada Inversa */}
-          <button
-            onClick={() => setSelectedProblem('inverse-transform')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'inverse-transform'
-                ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Divide className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Transformada Inversa</h4>
-                <p className="text-sm text-gray-600">Generación de variables no estándar</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Botón Inventarios (Vendedor de Revistas) */}
-          <button
-            onClick={() => setSelectedProblem('magazine-vendor')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'magazine-vendor'
-                ? 'border-rose-500 bg-rose-50 text-rose-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <BookOpen className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Inventarios</h4>
-                <p className="text-sm text-gray-600">Modelo del vendedor de revistas</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Botón Inversiones */}
-          <button
-            onClick={() => setSelectedProblem('investment-project')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'investment-project'
-                ? 'border-lime-500 bg-lime-50 text-lime-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <TrendingUp className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Inversiones</h4>
-                <p className="text-sm text-gray-600">Análisis de riesgo financiero</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Botón Composicion parte 1_5 */}
-          <button
-            onClick={() => setSelectedProblem('composicion')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'composicion'
-                ? 'border-teal-500 bg-teal-50 text-teal-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Divide className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Composición Trapezoidal</h4>
-                <p className="text-sm text-gray-600">Trapezoidal (f₁,f₂,f₃)</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Botón problema 1 */}
-          <button
-            onClick={() => setSelectedProblem('machine-mechanic')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'machine-mechanic'
-                ? 'border-violet-500 bg-violet-50 text-violet-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Wrench className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Máquinas por mecánico</h4>
-                <p className="text-sm text-gray-600">Fallas + Reparación + Costos</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Botón problema 2 (el que ya tienes) */}
-          <button
-            onClick={() => setSelectedProblem('unloading-team')}
-            className={`p-4 rounded-lg border-2 transition-colors ${
-              selectedProblem === 'unloading-team'
-                ? 'border-orange-500 bg-orange-50 text-orange-700'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Truck className="w-6 h-6" />
-              <div className="text-left">
-                <h4 className="font-medium">Equipo de descarga óptimo</h4>
-                <p className="text-sm text-gray-600">Poisson + Uniforme + Costos</p>
-              </div>
-            </div>
-          </button>
-
-
+          </div>
         </div>
 
-      </div>
+        {/* ============ PARTE 2 ============ */}
+        <div>
+          <div className="mb-3">
+            <h4 className="text-sm font-semibold text-gray-900">Parte 2</h4>
+          </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            {/* Camiones */}
+            <button
+              onClick={() => setSelectedProblem('camiones')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'camiones'
+                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Truck className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Colas de Camiones</h4>
+                  <p className="text-sm text-gray-600">Descarga nocturna y costos</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Inventario (q,R) */}
+            <button
+              onClick={() => setSelectedProblem('inventoryRQ')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'inventoryRQ'
+                  ? 'border-amber-500 bg-amber-50 text-amber-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Package className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Inventario (q, R)</h4>
+                  <p className="text-sm text-gray-600">Búsqueda óptima por simulación</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Servicios: Serie */}
+            <button
+              onClick={() => setSelectedProblem('service-serie')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'service-serie'
+                  ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Server className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Servicio: Serie</h4>
+                  <p className="text-sm text-gray-600">2 estaciones (Exp + Uniforme)</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Servicios: Banco */}
+            <button
+              onClick={() => setSelectedProblem('service-banco')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'service-banco'
+                  ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Server className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Servicio: Banco</h4>
+                  <p className="text-sm text-gray-600">N cajeros, servicio uniforme</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Servicio: Estacionamiento */}
+            <button
+              onClick={() => setSelectedProblem('service-estacionamiento')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'service-estacionamiento'
+                  ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Server className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Servicio: Estacionamiento</h4>
+                  <p className="text-sm text-gray-600">Capacidad finita (sin cola)</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Inventarios (vendedor de revistas) */}
+            <button
+              onClick={() => setSelectedProblem('magazine-vendor')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'magazine-vendor'
+                  ? 'border-rose-500 bg-rose-50 text-rose-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Inventarios</h4>
+                  <p className="text-sm text-gray-600">Modelo del vendedor de revistas</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Inversiones */}
+            <button
+              onClick={() => setSelectedProblem('investment-project')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'investment-project'
+                  ? 'border-lime-500 bg-lime-50 text-lime-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <TrendingUp className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Inversiones</h4>
+                  <p className="text-sm text-gray-600">Análisis de riesgo financiero</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Máquinas por mecánico */}
+            <button
+              onClick={() => setSelectedProblem('machine-mechanic')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'machine-mechanic'
+                  ? 'border-violet-500 bg-violet-50 text-violet-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Wrench className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Máquinas por mecánico</h4>
+                  <p className="text-sm text-gray-600">Fallas + Reparación + Costos</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Equipo de descarga óptimo */}
+            <button
+              onClick={() => setSelectedProblem('unloading-team')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'unloading-team'
+                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Truck className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Equipo de descarga óptimo</h4>
+                  <p className="text-sm text-gray-600">Poisson + Uniforme + Costos</p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
         <>
@@ -402,7 +402,9 @@ const SimulationModule: React.FC = () => {
         />
       ) : selectedProblem === 'composicion' ? (
         <ComposicionModule />
-      ) : selectedProblem === 'machine-mechanic' ? (
+      ) : selectedProblem === 'composicion-triangular' ? (
+        <ConposicionTriangularModule />
+      ): selectedProblem === 'machine-mechanic' ? (
         <MachineMechanicModule />
       ) :   selectedProblem === 'unloading-team' ? (
         <UnloadingTeamModule />

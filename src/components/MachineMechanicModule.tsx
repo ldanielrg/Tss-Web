@@ -55,7 +55,7 @@ export default function MachineMechanicModule() {
   return (
     <div className="space-y-6">
       <div className="mt-10">
-        <h2 className="text-3xl font-bold text-gray-900">Problema 1: Asignación de máquinas por mecánico</h2>
+        <h2 className="text-3xl font-bold text-gray-900">Asignación de máquinas por mecánico</h2>
         <p className="text-gray-600 mt-2">
           Simulación por eventos: fallas y reparaciones aleatorias (según tabla) y minimización de costo.
         </p>
