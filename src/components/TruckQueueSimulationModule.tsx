@@ -1,4 +1,3 @@
-// src/components/TruckQueueSimulationModule.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { Play, Truck } from 'lucide-react';
 import type { TruckQueueParams, TruckQueueSummary, TruckTeamSize } from '../types/truckQueueSimulation';
@@ -9,8 +8,6 @@ type Props = {
   onSimulated: (summary: TruckQueueSummary) => void;
   isSimulating: boolean;
   setIsSimulating: (v: boolean) => void;
-
-  /** ✅ NUEVO: para mandar params al padre (panel derecho) */
   onParamsChange?: (params: TruckQueueParams) => void;
 };
 
@@ -78,7 +75,6 @@ const TruckQueueSimulationModule: React.FC<Props> = ({
     seed: undefined,
   });
 
-  // ✅ Empujar params al padre (para que el panel derecho pueda usarlo)
   useEffect(() => {
     onParamsChange?.(params);
   }, [params, onParamsChange]);

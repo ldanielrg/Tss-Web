@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp, Wrench } from 'lucide-react'; // AGREGUE YO
+import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp, Wrench } from 'lucide-react'; 
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 
 // Camiones
 import TruckQueueSimulationModule from './TruckQueueSimulationModule';
 import TruckQueueResultsPanel from './TruckQueueResultsPanel';
-import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSimulation'; // ✅ CAMBIO: agregué TruckQueueParams
+import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSimulation'; 
 
 // Inventario (q,R)
-import InventorySimulationModule from './InventorySimulationModule'; // AGREGUE YO
-import InventoryResultsPanel from './InventoryResultsPanel'; // AGREGUE YO
-import type { InventorySimulationSummary } from '../types/inventorySimulation'; // AGREGUE YO
+import InventorySimulationModule from './InventorySimulationModule'; 
+import InventoryResultsPanel from './InventoryResultsPanel';
+import type { InventorySimulationSummary } from '../types/inventorySimulation'; 
 
 //Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
@@ -61,11 +61,11 @@ const SimulationModule: React.FC = () => {
   // Camiones
   const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
 
-  // ✅ NUEVO: guardar params del módulo camiones para usar en panel derecho (Paso 3/4)
+  // Parametros camiones (para mandar al panel derecho)
   const [truckParams, setTruckParams] = useState<TruckQueueParams | null>(null);
 
   // Inventario (q,R)
-  const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null); // AGREGUE YO
+  const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null);
 
   const runQueueSimulation = () => {
     setIsSimulating(true);
@@ -603,7 +603,7 @@ const SimulationModule: React.FC = () => {
               onSimulated={(summary) => {
                 setTruckSummary(summary);
               }}
-              onParamsChange={(p) => setTruckParams(p)} // ✅ NUEVO
+              onParamsChange={(p) => setTruckParams(p)} 
             />
           )}
 
@@ -624,7 +624,7 @@ const SimulationModule: React.FC = () => {
             <TruckQueueResultsPanel
               summary={truckSummary}
               isSimulating={isSimulating}
-              params={truckParams} // ✅ NUEVO
+              params={truckParams} 
             />
           )}
 

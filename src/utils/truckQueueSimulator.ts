@@ -1,5 +1,3 @@
-// src/utils/truckQueueSimulator.ts
-
 import type {
   TruckQueueCost,
   TruckQueueParams,
@@ -41,10 +39,7 @@ function makeLCG(seed: number) {
     return x / 2 ** 32; // [0,1)
   };
 }
-
-/**
- * Transformada inversa discreta (intervalos [Fprev, F))
- */
+ //Transformada inversa 
 export function invDiscrete(u: number, values: number[], probs: number[]) {
   let acc = 0;
   for (let i = 0; i < values.length; i++) {
@@ -54,9 +49,6 @@ export function invDiscrete(u: number, values: number[], probs: number[]) {
   return values[values.length - 1];
 }
 
-/** =========================
- *  DISTRIBUCIONES (Paso 2)
- *  ========================= */
 export type DiscreteDist = {
   label: string;
   unit: 'min' | 'camiones';
@@ -165,9 +157,7 @@ function computeCosts(params: TruckQueueParams, team: number, totalWaitMin: numb
   };
 }
 
-/** =========================
- * PASO 3: 1 noche + trace
- * ========================= */
+//Noche individual
 export function simulateTruckQueueOneNightDetail(
   params: TruckQueueParams,
   team: TruckTeamSize,
@@ -180,7 +170,6 @@ export function simulateTruckQueueOneNightDetail(
   const breakStart = minutesFromStart(params.horaBreak, startStr);
   const breakDur = durationToMinutes(params.duracionBreak);
 
-  // Llegadas + registro de R e IA
   const initN = invDiscrete(rnd(), INIT_DIST.values, INIT_DIST.probs);
 
   type ArrivalRec = { llegada: number; rIA: number | null; ia: number | null };
@@ -263,9 +252,7 @@ export function simulateTruckQueueOneNightDetail(
   return { team, cost, trace, breakBeginMin: breakBegin, breakEndMin: breakEnd };
 }
 
-/** =========================
- * PASO 5/6: N turnos + promedio + stats
- * ========================= */
+// Múltiples noches y equipos
 function mean(xs: number[]) {
   if (xs.length === 0) return 0;
   return xs.reduce((a, b) => a + b, 0) / xs.length;
@@ -329,7 +316,6 @@ function simulateManyWithTurns(params: TruckQueueParams, team: TruckTeamSize, n:
   const totals = turns.map((t) => t.costoTotal);
   const std = sampleStd(totals);
 
-  // CI 95% (aprox): media ± z * std/sqrt(n)
   const z = n >= 30 ? 1.96 : 2.0;
   const half = n > 0 ? z * (std / Math.sqrt(n)) : 0;
 

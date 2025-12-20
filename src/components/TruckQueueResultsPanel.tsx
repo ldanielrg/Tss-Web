@@ -15,14 +15,10 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 type Props = {
   summary: TruckQueueSummary | null;
   isSimulating: boolean;
-
-  /** params para correr Paso 3/4 en panel derecho */
   params?: TruckQueueParams | null;
 };
 
-// -----------------------------
-// Helpers de tiempo (HH:mm:ss)
-// -----------------------------
+// Convierte "HH:MM:SS" a objeto {hh, mm, ss}
 function parseHMS(s: string) {
   const parts = (s || '').split(':');
   const hh = parseInt(parts[0] || '0', 10);
@@ -54,7 +50,6 @@ function minutesToDuration(min: number) {
 }
 
 const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params }) => {
-  // ✅ Hooks siempre arriba
   const [teamForTurns, setTeamForTurns] = useState<number>(3);
   const [traceTeam, setTraceTeam] = useState<TruckTeamSize>(3);
   const [nightDetail, setNightDetail] = useState<TruckQueueNightDetail | null>(null);
@@ -84,13 +79,11 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
     if (!teamsToShow.includes(traceTeam)) setTraceTeam(teamsToShow[0]);
   }, [teamsToShow, traceTeam]);
 
-  // Resetear contador y simulación cuando cambia el equipo
   useEffect(() => {
     setSimulationCounter(0);
     setNightDetail(null);
   }, [traceTeam]);
 
-  // ✅ returns después de hooks
   if (isSimulating) {
     return (
       <div className="bg-white p-12 rounded-lg shadow-md text-center">
@@ -114,10 +107,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
       </div>
     );
   }
-
-  // -----------------------------
-  // Costos (promedios por equipo)
-  // -----------------------------
+  // Gráfico de barras de costos por equipo
   const costos = teamsToShow.map((team) => summary.porEquipo[team].costoTotal);
   const maxCosto = Math.max(...costos);
   const minCosto = Math.min(...costos);
@@ -186,11 +176,10 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
-      {/* ✅ PASO 3 + PASO 4 */}
       <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="font-semibold text-orange-800">
-            Paso 3 y 4: Corrida detallada + cálculo de costos (1 noche)
+            Detallada Corrida/Costos (1 noche), segun el tamaño de equipo: {traceTeam} personas
           </h4>
           <span className="text-xs bg-white border border-orange-200 text-orange-700 px-2 py-1 rounded">
             Tabla + ΣW + costos
@@ -228,7 +217,6 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
               </button>
             </div>
 
-            {/* ✅ TABLA FORMATO EXCEL (como tu imagen) */}
             {nightDetail && params && (
               <div className="bg-white rounded-lg border overflow-hidden">
                 <div className="bg-purple-700 text-white font-semibold text-sm px-3 py-2">
@@ -254,21 +242,16 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
 
                     <tbody>
                       {nightDetail.trace.slice(0, 30).map((r, idx, arr) => {
-                        // T/Llegada: si no hay iaMin (primero), usar llegadaMin (desde inicio)
                         const tLlegMin = r.iaMin ?? r.llegadaMin;
-
-                        // Ocio del personal (idle): max(0, inicio - fin_anterior)
                         const prevFin = idx === 0 ? 0 : arr[idx - 1].finMin;
                         const ocioMin = Math.max(0, r.inicioMin - prevFin);
 
-                        // Log. De Fila (tamaño cola al llegar): #en sistema - 1
                         let enSistema = 0;
                         for (let j = 0; j < idx; j++) {
                           if (arr[j].finMin > r.llegadaMin) enSistema++;
                         }
                         const logFila = Math.max(0, enSistema - 1);
 
-                        // estilos tipo Excel
                         const tdRand = 'border px-2 py-2 text-center bg-cyan-50 font-mono';
                         const tdDur = 'border px-2 py-2 text-center bg-orange-50 font-mono';
                         const tdTime = 'border px-2 py-2 text-center font-mono';
@@ -276,34 +259,27 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
 
                         return (
                           <tr key={r.i} className={r.breakAplicadoAntesDeEste ? 'bg-orange-100/40' : ''}>
-                            {/* Aleatorio Llegada */}
-                            <td className={tdRand}>{r.rIA == null ? '—' : r.rIA.toFixed(2)}</td>
 
-                            {/* T/Llegada (duración) */}
+                            <td className={tdRand}>{r.rIA == null ? '—' : r.rIA.toFixed(2)}</td>
+                    
                             <td className={tdDur}>{minutesToDuration(tLlegMin)}</td>
 
-                            {/* TD'Llegada (hora reloj) */}
                             <td className={tdTime}>{minutesToClock(params.horaInicio, r.llegadaMin)}</td>
-
-                            {/* Ini D' Serv. (hora reloj) */}
+               
                             <td className={tdTime}>{minutesToClock(params.horaInicio, r.inicioMin)}</td>
-
-                            {/* Aleatorio Servicio */}
+                      
                             <td className={tdRand}>{r.rST.toFixed(2)}</td>
 
-                            {/* TD' Serv. (duración) */}
                             <td className={tdDur}>{minutesToDuration(r.stMin)}</td>
 
-                            {/* Term D' Serv. (hora reloj) */}
                             <td className={tdTime}>{minutesToClock(params.horaInicio, r.finMin)}</td>
 
-                            {/* OcioD' Pers. (duración) */}
+                   
                             <td className={tdTime}>{minutesToDuration(ocioMin)}</td>
-
-                            {/* TD' espera Cam. (duración) */}
+                          
                             <td className={tdTime}>{minutesToDuration(r.esperaMin)}</td>
 
-                            {/* Log. de Fila */}
+                          
                             <td className={tdPlain}>{logFila}</td>
                           </tr>
                         );
@@ -395,7 +371,7 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
         )}
       </div>
 
-      {/* ✅ COSTOS PROMEDIO */}
+      {/*COSTOS PROMEDIO */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -511,11 +487,10 @@ const TruckQueueResultsPanel: React.FC<Props> = ({ summary, isSimulating, params
           )}
         </div>
 
-        {/* Paso 6 */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mt-6 space-y-2">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <BarChart className="w-5 h-5 text-purple-600" />
-            Paso 6: Selección del equipo óptimo
+            Detalle del equipo mas óptimo
           </h3>
 
           <p className="text-sm text-gray-700">
