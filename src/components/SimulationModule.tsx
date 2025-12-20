@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp, Wrench } from 'lucide-react'; // AGREGUE YO
+import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen, TrendingUp, Wrench } from 'lucide-react'; 
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
-import { Outlet } from 'react-router-dom';
 
 // Camiones
 import TruckQueueSimulationModule from './TruckQueueSimulationModule';
 import TruckQueueResultsPanel from './TruckQueueResultsPanel';
-import type { TruckQueueSummary } from '../types/truckQueueSimulation';
+import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSimulation'; 
 
 // Inventario (q,R)
-import InventorySimulationModule from './InventorySimulationModule'; // AGREGUE YO
-import InventoryResultsPanel from './InventoryResultsPanel'; // AGREGUE YO
-import type { InventorySimulationSummary } from '../types/inventorySimulation'; // AGREGUE YO
+import InventorySimulationModule from './InventorySimulationModule'; 
+import InventoryResultsPanel from './InventoryResultsPanel';
+import type { InventorySimulationSummary } from '../types/inventorySimulation'; 
 
 //Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
@@ -63,10 +62,12 @@ const SimulationModule: React.FC = () => {
 
   // Camiones
   const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
-  const [truckPersonas, setTruckPersonas] = useState<'AUTO' | 3 | 4 | 5 | 6>('AUTO');
+
+  // Parametros camiones (para mandar al panel derecho)
+  const [truckParams, setTruckParams] = useState<TruckQueueParams | null>(null);
 
   // Inventario (q,R)
-  const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null); // AGREGUE YO
+  const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null);
 
   const runQueueSimulation = () => {
     setIsSimulating(true);
@@ -409,10 +410,7 @@ const SimulationModule: React.FC = () => {
       ) :   selectedProblem === 'unloading-team' ? (
         <UnloadingTeamModule />
       ) : (
-
-    
-
-      <div className= "grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="space-y-4">
           {selectedProblem === 'queue' && (
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -606,10 +604,10 @@ const SimulationModule: React.FC = () => {
             <TruckQueueSimulationModule
               isSimulating={isSimulating}
               setIsSimulating={setIsSimulating}
-              onSimulated={(summary, personas) => {
+              onSimulated={(summary) => {
                 setTruckSummary(summary);
-                setTruckPersonas(personas);
               }}
+              onParamsChange={(p) => setTruckParams(p)} 
             />
           )}
 
@@ -630,7 +628,7 @@ const SimulationModule: React.FC = () => {
             <TruckQueueResultsPanel
               summary={truckSummary}
               isSimulating={isSimulating}
-              personas={truckPersonas}
+              params={truckParams} 
             />
           )}
 
