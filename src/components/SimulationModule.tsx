@@ -17,6 +17,7 @@ import type { InventorySimulationSummary } from '../types/inventorySimulation'; 
 //Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
 import ComposicionModule from './ComposicionModule';
+import ConposicionTriangularModule from './ComposicionTriangularModule';
 
 
 // Nuevas páginas
@@ -39,6 +40,7 @@ const SimulationModule: React.FC = () => {
     | 'magazine-vendor'
     | 'investment-project'
     | 'composicion'
+    | 'composicion-triangular'
     | 'unloading-team'
     | 'machine-mechanic'
   >('queue');
@@ -341,6 +343,24 @@ const SimulationModule: React.FC = () => {
             </div>
           </button>
 
+          <button
+            onClick={() => setSelectedProblem('composicion-triangular')}
+            className={`p-4 rounded-lg border-2 transition-colors ${
+              selectedProblem === 'composicion-triangular'
+                ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <Divide className="w-6 h-6" />
+              <div className="text-left">
+                <h4 className="font-medium">Composición Triangular</h4>
+                <p className="text-sm text-gray-600">Triangular (f₁, f₂) + Inversa</p>
+              </div>
+            </div>
+          </button>
+
+
           {/* Botón problema 1 */}
           <button
             onClick={() => setSelectedProblem('machine-mechanic')}
@@ -402,7 +422,9 @@ const SimulationModule: React.FC = () => {
         />
       ) : selectedProblem === 'composicion' ? (
         <ComposicionModule />
-      ) : selectedProblem === 'machine-mechanic' ? (
+      ) : selectedProblem === 'composicion-triangular' ? (
+        <ConposicionTriangularModule />
+      ): selectedProblem === 'machine-mechanic' ? (
         <MachineMechanicModule />
       ) :   selectedProblem === 'unloading-team' ? (
         <UnloadingTeamModule />
