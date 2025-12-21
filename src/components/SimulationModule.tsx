@@ -3,6 +3,12 @@ import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen,
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 
+// actividad 6 parte 2
+import Opcion3 from '../pages/Opcion3';
+import Opcion4 from '../pages/Opcion4';
+
+import Actividad1_1 from '../pages/Actividad1-1';
+
 // Camiones
 import TruckQueueSimulationModule from './TruckQueueSimulationModule';
 import TruckQueueResultsPanel from './TruckQueueResultsPanel';
@@ -12,10 +18,6 @@ import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSim
 import InventorySimulationModule from './InventorySimulationModule';
 import InventoryResultsPanel from './InventoryResultsPanel';
 import type { InventorySimulationSummary } from '../types/inventorySimulation';
-
-//Actividad 1_4 Parte 2 (Problema 1 + Problema 2)
-import InventoryActividad14SimulationModule from './InventoryActividad14SimulationModule';
-import InventoryActividad14ResultsPanel from './InventoryActividad14ResultsPanel';
 import type { InventoryA14Summary } from '../types/inventoryActividad14';
 
 // Servicios
@@ -23,7 +25,7 @@ import ServiceSystemsModule from './ServiceSystemsModule';
 import ComposicionModule from './ComposicionModule';
 import ConposicionTriangularModule from './ComposicionTriangularModule';
 
-// Composición, mesclar Exponencial
+// Composición, mezclar Exponencial
 import ComposicionExponencialMixtureModule from './ComposicionExponencialMixtureModule';
 
 // Composición, mezclar Binomial
@@ -55,6 +57,13 @@ const SimulationModule: React.FC = () => {
     | 'composicion-binomial-mixture'
     | 'unloading-team'
     | 'machine-mechanic'
+    | 'parte1-opcion-3'
+    | 'parte1-opcion-4'
+    // ✅ NUEVO: Actividad 1-1 (Ejemplos)
+    | 'act1_1_ej1'
+    | 'act1_1_ej2'
+    | 'act1_1_ej3'
+    | 'act1_1_ej4'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -75,15 +84,10 @@ const SimulationModule: React.FC = () => {
 
   // Camiones
   const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
-
-  // Parametros camiones (para mandar al panel derecho)
   const [truckParams, setTruckParams] = useState<TruckQueueParams | null>(null);
 
   // Inventario (q,R)
   const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null);
-
-  // Actividad 1_4 Parte 2
-  const [inventoryA14Summary, setInventoryA14Summary] = useState<InventoryA14Summary | null>(null);
 
   const runQueueSimulation = () => {
     setIsSimulating(true);
@@ -222,7 +226,7 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* Mezcla Exponencial por Composición*/}
+            {/* Mezcla Exponencial por Composición */}
             <button
               onClick={() => setSelectedProblem('composicion-exp-mixture')}
               className={`p-4 rounded-lg border-2 transition-colors ${
@@ -257,10 +261,46 @@ const SimulationModule: React.FC = () => {
                 </div>
               </div>
             </button>
+
+            {/*Actividad 1-1 — Ejemplo 1 (Parte 1) */}
+            <button
+              onClick={() => setSelectedProblem('act1_1_ej1')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'act1_1_ej1'
+                  ? 'border-gray-900 bg-gray-100 text-gray-900'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición Triangular</h4>
+                  <p className="text-sm text-gray-600">Método del Rechazo</p>
+                </div>
+              </div>
+            </button>
+
+            {/*Actividad 1-1 — Ejemplo 2 (Parte 1) */}
+            <button
+              onClick={() => setSelectedProblem('act1_1_ej2')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'act1_1_ej2'
+                  ? 'border-gray-900 bg-gray-100 text-gray-900'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición, uniforme-lineal</h4>
+                  <p className="text-sm text-gray-600">Método del rechazo</p>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
 
-        {/* PARTE 2 */}
+        {/* ============ PARTE 2 ============ */}
         <div>
           <div className="mb-3">
             <h4 className="text-sm font-semibold text-gray-900">Parte 2</h4>
@@ -411,6 +451,42 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
+            {/* ACTIVIDAD 6 Opción 3 */}
+            <button
+              onClick={() => setSelectedProblem('parte1-opcion-3')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'parte1-opcion-3'
+                  ? 'border-lime-500 bg-lime-50 text-lime-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <TrendingUp className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Proyecto de Inversión</h4>
+                  <p className="text-sm text-gray-600">Probabilidad de TIR vs TREMA</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Cantidad de descarga de camiones ACTIVIDAD 6 Opción 4 */}
+            <button
+              onClick={() => setSelectedProblem('parte1-opcion-4')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'parte1-opcion-4'
+                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Truck className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Número óptimo de camiones de descarga</h4>
+                  <p className="text-sm text-gray-600">Costo de excedentes</p>
+                </div>
+              </div>
+            </button>
+
             {/* Máquinas por mecánico */}
             <button
               onClick={() => setSelectedProblem('machine-mechanic')}
@@ -446,11 +522,60 @@ const SimulationModule: React.FC = () => {
                 </div>
               </div>
             </button>
+
+            {/* LANZAMIENTO DADOS ACTIVIDAD 1 */}
+            <button
+              onClick={() => setSelectedProblem('act1_1_ej3')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'act1_1_ej3'
+                  ? 'border-gray-900 bg-gray-100 text-gray-900'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Lanzamiento de datos</h4>
+                  <p className="text-sm text-gray-600">Juego 7-11</p>
+                </div>
+              </div>
+            </button>
+
+            {/* RULETA ACTIVIDAD 1 */}
+            <button
+              onClick={() => setSelectedProblem('act1_1_ej4')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'act1_1_ej4'
+                  ? 'border-gray-900 bg-gray-100 text-gray-900'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">El juego de la ruleta</h4>
+                  <p className="text-sm text-gray-600">Ruleta</p>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
 
-      {['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
+      {/* Render */}
+      {selectedProblem === 'act1_1_ej1' ? (
+        <Actividad1_1 onlyTab="ej1" hideTabs />
+      ) : selectedProblem === 'act1_1_ej2' ? (
+        <Actividad1_1 onlyTab="ej2" hideTabs />
+      ) : selectedProblem === 'act1_1_ej3' ? (
+        <Actividad1_1 onlyTab="ej3" hideTabs />
+      ) : selectedProblem === 'act1_1_ej4' ? (
+        <Actividad1_1 onlyTab="ej4" hideTabs />
+      ) : selectedProblem === 'parte1-opcion-3' ? (
+        <Opcion3 />
+      ) : selectedProblem === 'parte1-opcion-4' ? (
+        <Opcion4 />
+      ) : ['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
         <>
           {selectedProblem === 'inverse-transform' && <InverseTransform />}
           {selectedProblem === 'magazine-vendor' && <MagazineVendor />}
@@ -689,15 +814,6 @@ const SimulationModule: React.FC = () => {
                 onSimulated={(summary) => setInventorySummary(summary)}
               />
             )}
-
-            {/*Actividad 1_4 (Parte 2) */}
-            {selectedProblem === 'inventory-actividad14' && (
-              <InventoryActividad14SimulationModule
-                isSimulating={isSimulating}
-                setIsSimulating={setIsSimulating}
-                onSimulated={(s) => setInventoryA14Summary(s)}
-              />
-            )}
           </div>
 
           {/* Panel de resultados */}
@@ -712,76 +828,62 @@ const SimulationModule: React.FC = () => {
               <InventoryResultsPanel summary={inventorySummary} isSimulating={isSimulating} />
             )}
 
-            {/* Resultados Actividad 1_4 */}
-            {selectedProblem === 'inventory-actividad14' && (
-              <InventoryActividad14ResultsPanel summary={inventoryA14Summary} isSimulating={isSimulating} />
-            )}
-
             {/* Resultados generales (queue/inventory básico) */}
-            {selectedProblem !== 'camiones' &&
-              selectedProblem !== 'inventoryRQ' &&
-              selectedProblem !== 'inventory-actividad14' && 
-              results.length > 0 && (
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                    <BarChart className="w-5 h-5 text-purple-600" />
-                    <span>Cronograma de Eventos</span>
-                  </h3>
+            {selectedProblem !== 'camiones' && selectedProblem !== 'inventoryRQ' && results.length > 0 && (
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+                  <BarChart className="w-5 h-5 text-purple-600" />
+                  <span>Cronograma de Eventos</span>
+                </h3>
 
-                  <div className="max-h-96 overflow-y-auto">
-                    <div className="space-y-2">
-                      {results.slice(0, 20).map((event, index) => (
-                        <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-8 bg-purple-100 text-purple-700 rounded text-sm font-mono flex items-center justify-center">
-                              {event.time}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2">
-                              <span
-                                className={`px-2 py-1 rounded text-xs font-medium ${
-                                  event.type === 'Llegada' || event.type === 'Demanda'
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : event.type === 'Salida'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-orange-100 text-orange-800'
-                                }`}
-                              >
-                                {event.type}
-                              </span>
-                              <span className="text-sm text-gray-700">{event.description}</span>
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">Estado: {JSON.stringify(event.systemState)}</div>
+                <div className="max-h-96 overflow-y-auto">
+                  <div className="space-y-2">
+                    {results.slice(0, 20).map((event, index) => (
+                      <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-8 bg-purple-100 text-purple-700 rounded text-sm font-mono flex items-center justify-center">
+                            {event.time}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${
+                                event.type === 'Llegada' || event.type === 'Demanda'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : event.type === 'Salida'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-orange-100 text-orange-800'
+                              }`}
+                            >
+                              {event.type}
+                            </span>
+                            <span className="text-sm text-gray-700">{event.description}</span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">Estado: {JSON.stringify(event.systemState)}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-
-                  {results.length > 20 && (
-                    <div className="mt-4 text-center text-sm text-gray-500">
-                      Mostrando los primeros 20 eventos de {results.length} total
-                    </div>
-                  )}
                 </div>
-              )}
 
-            {selectedProblem !== 'camiones' &&
-              selectedProblem !== 'inventoryRQ' &&
-              selectedProblem !== 'inventory-actividad14' && 
-              results.length === 0 &&
-              !isSimulating && (
-                <div className="bg-white p-12 rounded-lg shadow-md text-center">
-                  <div className="text-gray-400 mb-4">
-                    <Clock className="w-16 h-16 mx-auto" />
+                {results.length > 20 && (
+                  <div className="mt-4 text-center text-sm text-gray-500">
+                    Mostrando los primeros 20 eventos de {results.length} total
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Sin Simulación</h3>
-                  <p className="text-gray-600">
-                    Configura los parámetros y ejecuta una simulación para ver los resultados.
-                  </p>
+                )}
+              </div>
+            )}
+
+            {selectedProblem !== 'camiones' && selectedProblem !== 'inventoryRQ' && results.length === 0 && !isSimulating && (
+              <div className="bg-white p-12 rounded-lg shadow-md text-center">
+                <div className="text-gray-400 mb-4">
+                  <Clock className="w-16 h-16 mx-auto" />
                 </div>
-              )}
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Sin Simulación</h3>
+                <p className="text-gray-600">Configura los parámetros y ejecuta una simulación para ver los resultados.</p>
+              </div>
+            )}
           </div>
         </div>
       )}

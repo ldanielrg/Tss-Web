@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import DataTableModal from "../simulstat_parte1/components/DataTableModal";
+import DataTableModal from "../components/DataTableModal";
 import InverseScatterWithGuides from "../components/charts/InverseScatterWithGuides";
 import PmfBarWithLine from "../components/charts/PmfBarWithLine";
 import {

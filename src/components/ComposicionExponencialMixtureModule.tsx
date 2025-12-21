@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import DataTableModal from "../simulstat_parte1/components/DataTableModal";
+import DataTableModal from "./DataTableModal";
 import InverseScatterWithGuides from "./charts/InverseScatterWithGuides";
 
 import {

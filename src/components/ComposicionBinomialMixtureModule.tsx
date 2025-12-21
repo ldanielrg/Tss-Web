@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Divide, Play, Clock } from "lucide-react";
 
-import DataTableModal from "../simulstat_parte1/components/DataTableModal";
+import DataTableModal from "./DataTableModal";
 import PmfBarWithLine from "../components/charts/PmfBarWithLine";
 import InverseScatterWithGuides from "../components/charts/InverseScatterWithGuides";
 
