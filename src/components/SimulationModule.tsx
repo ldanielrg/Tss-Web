@@ -36,6 +36,8 @@ import { MagazineVendor } from '../pages/MagazineVendor';
 import { InvestmentProject } from '../pages/InvestmentProject';
 import UnloadingTeamModule from './UnloadingTeamModule';
 import MachineMechanicModule from './MachineMechanicModule';
+import InverseTransformEj1Module from './InverseTransformEj1Module';
+import InverseTransformEj2Module from './InverseTransformEj2Module';
 
 const SimulationModule: React.FC = () => {
   const [selectedProblem, setSelectedProblem] = useState<
@@ -62,6 +64,9 @@ const SimulationModule: React.FC = () => {
     | 'act1_1_ej2'
     | 'act1_1_ej3'
     | 'act1_1_ej4'
+    | 'act1_4_p1_ej1'
+    | 'act1_4_p1_ej2'
+
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -295,6 +300,43 @@ const SimulationModule: React.FC = () => {
                 </div>
               </div>
             </button>
+
+            {/* Actividad 1-4 — Parte 1 — Ejercicio 1 (Transformada Inversa) */}
+            <button
+              onClick={() => setSelectedProblem('act1_4_p1_ej1')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'act1_4_p1_ej1'
+                  ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Transformada Inversa Parabola</h4>
+                  <p className="text-sm text-gray-600">f(x) ∝ (x-a)² en [L,U]</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Actividad 1-4 — Parte 1 — Ejercicio 2 (Transformada Inversa) */}
+            <button
+              onClick={() => setSelectedProblem('act1_4_p1_ej2')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'act1_4_p1_ej2'
+                  ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Transformada Inversa Triangular</h4>
+                  <p className="text-sm text-gray-600">Por tramo: Izq [a,b] / Der [b,c]</p>
+                </div>
+              </div>
+            </button>
+            
           </div>
         </div>
 
@@ -572,6 +614,16 @@ const SimulationModule: React.FC = () => {
           }
           showSelector={false}
         />
+      ) : selectedProblem === 'act1_4_p1_ej1' ? (
+        <InverseTransformEj1Module />
+      ) : ['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
+        <>
+          {selectedProblem === 'inverse-transform' && <InverseTransform />}
+          {selectedProblem === 'magazine-vendor' && <MagazineVendor />}
+          {selectedProblem === 'investment-project' && <InvestmentProject />}
+        </>
+      ) : selectedProblem === 'act1_4_p1_ej2' ? (
+        <InverseTransformEj2Module />
       ) : selectedProblem === 'composicion' ? (
         <ComposicionModule />
       ) : selectedProblem === 'composicion-triangular' ? (
