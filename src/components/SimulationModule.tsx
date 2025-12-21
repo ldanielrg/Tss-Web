@@ -19,7 +19,7 @@ import InventorySimulationModule from './InventorySimulationModule';
 import InventoryResultsPanel from './InventoryResultsPanel';
 import type { InventorySimulationSummary } from '../types/inventorySimulation';
 
-// ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (P1/P2 + Tablas + Gráficas + Hooke & Jeeves)
+//  NUEVO: Inventario Actividad 1_4 Parte 2 (P1/P2 + Tablas + Gráficas + Hooke & Jeeves)
 import InventoryActividad14SimulationModule from './InventoryActividad14SimulationModule';
 import InventoryActividad14ResultsPanel from './InventoryActividad14ResultsPanel';
 import type { InventoryA14Summary } from '../types/inventoryActividad14';
@@ -64,14 +64,12 @@ const SimulationModule: React.FC = () => {
     | 'machine-mechanic'
     | 'parte1-opcion-3'
     | 'parte1-opcion-4'
-    // ✅ NUEVO: Actividad 1-1 (Ejemplos)
     | 'act1_1_ej1'
     | 'act1_1_ej2'
     | 'act1_1_ej3'
     | 'act1_1_ej4'
     | 'act1_4_p1_ej1'
     | 'act1_4_p1_ej2'
-    // ✅ NUEVO: Actividad 1_4 (Parte 2) Inventario (q,R) completo (P1/P2 + H&J)
     | 'inventoryA14'
   >('queue');
 
@@ -98,7 +96,7 @@ const SimulationModule: React.FC = () => {
   // Inventario (q,R) (OTRO ejercicio)
   const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null);
 
-  // ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (P1/P2 + H&J)
+  //  NUEVO: Inventario Actividad 1_4 Parte 2 (P1/P2 + H&J)
   const [inventoryA14Summary, setInventoryA14Summary] = useState<InventoryA14Summary | null>(null);
 
   const runQueueSimulation = () => {
@@ -391,7 +389,7 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (Implementación completa) */}
+            {/*  NUEVO: Inventario Actividad 1_4 Parte 2 (Implementación completa) */}
             <button
               onClick={() => setSelectedProblem('inventoryA14')}
               className={`p-4 rounded-lg border-2 transition-colors ${
@@ -873,7 +871,7 @@ const SimulationModule: React.FC = () => {
               />
             )}
 
-            {/* ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (Implementación completa) */}
+            {/* NUEVO: Inventario Actividad 1_4 Parte 2 (Implementación completa) */}
             {selectedProblem === 'inventoryA14' && (
               <InventoryActividad14SimulationModule
                 isSimulating={isSimulating}
@@ -895,7 +893,7 @@ const SimulationModule: React.FC = () => {
               <InventoryResultsPanel summary={inventorySummary} isSimulating={isSimulating} />
             )}
 
-            {/* ✅ NUEVO: Resultados Inventario Actividad 1_4 Parte 2 */}
+            {/*  NUEVO: Resultados Inventario Actividad 1_4 Parte 2 */}
             {selectedProblem === 'inventoryA14' && (
               <InventoryActividad14ResultsPanel summary={inventoryA14Summary} isSimulating={isSimulating} />
             )}
