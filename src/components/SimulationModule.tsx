@@ -3,6 +3,10 @@ import { Clock, Users, Package, Play, BarChart, Truck, Divide, Server, BookOpen,
 import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 
+//actividad 6 parte 2
+import Opcion3 from '../simulstat_parte1/pages/Opcion3';
+import Opcion4 from '../simulstat_parte1/pages/Opcion4';
+
 // Camiones
 import TruckQueueSimulationModule from './TruckQueueSimulationModule';
 import TruckQueueResultsPanel from './TruckQueueResultsPanel';
@@ -50,6 +54,8 @@ const SimulationModule: React.FC = () => {
     | 'composicion-binomial-mixture' 
     | 'unloading-team'
     | 'machine-mechanic'
+    | 'parte1-opcion-3'
+    | 'parte1-opcion-4'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -386,6 +392,40 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
+             {/*Inversión de la empresa (2) -> Parte1 Opción 3 */}
+            <button
+              onClick={() => setSelectedProblem('parte1-opcion-3')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'parte1-opcion-3'
+                  ? 'border-lime-500 bg-lime-50 text-lime-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <TrendingUp className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Inversión de la empresa (2)</h4>
+                  <p className="text-sm text-gray-600">Vista Parte 1 / opción 3</p>
+                </div>
+              </div>
+            </button>
+            {/*Cantidad de descarga de camiones (2) -> Parte1 Opción 4 */}
+            <button
+              onClick={() => setSelectedProblem('parte1-opcion-4')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'parte1-opcion-4'
+                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Truck className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Cantidad de descarga de camiones (2)</h4>
+                  <p className="text-sm text-gray-600">Vista Parte 1 / opción 4</p>
+                </div>
+              </div>
+            </button>
             {/* Máquinas por mecánico */}
             <button
               onClick={() => setSelectedProblem('machine-mechanic')}
@@ -425,7 +465,12 @@ const SimulationModule: React.FC = () => {
         </div>
       </div>
 
-      {['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
+     
+      {selectedProblem === 'parte1-opcion-3' ? (
+        <Opcion3 />
+      ) : selectedProblem === 'parte1-opcion-4' ? (
+        <Opcion4 />
+      ) :['inverse-transform', 'magazine-vendor', 'investment-project'].includes(selectedProblem) ? (
         <>
           {selectedProblem === 'inverse-transform' && <InverseTransform />}
           {selectedProblem === 'magazine-vendor' && <MagazineVendor />}
@@ -738,6 +783,9 @@ const SimulationModule: React.FC = () => {
               <p className="text-gray-600">Configura los parámetros y ejecuta una simulación para ver los resultados.</p>
             </div>
           )}
+
+
+          
         </div>
       </div> 
 )}
