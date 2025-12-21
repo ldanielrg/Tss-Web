@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import DataTableModal from "../simulstat_parte1/components/DataTableModal";
+import DataTableModal from "../components/DataTableModal";
 import RejectionScatter from "../components/charts/RejectionScatter";
 import SimpleBarCompare from "../components/charts/SimpleBarCompare";
 import {

@@ -4,8 +4,8 @@ import { DiscreteEventSimulator } from '../utils/eventSimulator';
 import Tooltip from './Tooltip';
 
 // actividad 6 parte 2
-import Opcion3 from '../simulstat_parte1/pages/Opcion3';
-import Opcion4 from '../simulstat_parte1/pages/Opcion4';
+import Opcion3 from '../pages/Opcion3';
+import Opcion4 from '../pages/Opcion4';
 
 import Actividad1_1 from '../pages/Actividad1-1';
 

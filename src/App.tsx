@@ -6,12 +6,12 @@ import { InverseTransform } from './pages/InverseTransform';
 import { InvestmentProject } from './pages/InvestmentProject';
 import { MagazineVendor } from './pages/MagazineVendor';
 
-import Parte1Layout from './simulstat_parte1/pages/Parte1Layout';
-import Parte1Home from './simulstat_parte1/pages/Parte1Home.tsx';
-import Opcion1 from './simulstat_parte1/pages/Opcion1.tsx';
-import Opcion2 from './simulstat_parte1/pages/Opcion2.tsx';
-import Opcion3 from './simulstat_parte1/pages/Opcion3.tsx';
-import Opcion4 from './simulstat_parte1/pages/Opcion4.tsx';
+import Parte1Layout from './pages/Parte1Layout.tsx';
+import Parte1Home from './pages/Parte1Home.tsx';
+import Opcion1 from './pages/Opcion1.tsx';
+import Opcion2 from './pages/Opcion2.tsx';
+import Opcion3 from './pages/Opcion3.tsx';
+import Opcion4 from './pages/Opcion4.tsx';
 import Camiones from './components/TruckCompositionModule.tsx';
 import Actividad1_8 from './pages/Actividad1-8.tsx';
 import Actividad1_1 from './pages/Actividad1-1.tsx';
