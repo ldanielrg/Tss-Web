@@ -18,7 +18,7 @@ import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSim
 import InventorySimulationModule from './InventorySimulationModule';
 import InventoryResultsPanel from './InventoryResultsPanel';
 import type { InventorySimulationSummary } from '../types/inventorySimulation';
-import type { InventoryA14Summary } from '../types/inventoryActividad14';
+//import type { InventoryA14Summary } from '../types/inventoryActividad14';
 
 // Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';

@@ -1,3 +1,4 @@
+// src/components/InventoryActividad14SimulationModule.tsx
 import { useMemo, useState } from "react";
 import { Play, Package, Search } from "lucide-react";
 import type {
@@ -164,7 +165,7 @@ export default function InventoryActividad14SimulationModule({
         RMin,
         RMax,
       });
-      
+
       const bestParams: InventoryA14Params = {
         ...baseParams,
         q: hj.best.q,

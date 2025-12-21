@@ -1,3 +1,4 @@
+// src/types/inventoryActividad14.ts
 export type InventoryA14Problem = "P1" | "P2";
 export type DiscreteOutcome<T extends number | string> = {
   value: T;

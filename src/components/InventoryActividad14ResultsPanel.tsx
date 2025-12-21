@@ -1,3 +1,4 @@
+// src/components/InventoryActividad14ResultsPanel.tsx
 import { useMemo, useState } from "react";
 import { BarChart2, Table2, LineChart as LineIcon } from "lucide-react";
 import type { InventoryA14Summary } from "../types/inventoryActividad14";

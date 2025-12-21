@@ -1,3 +1,4 @@
+// src/utils/inventoryActividad14Simulator.ts
 import type {
   DiscreteDistribution,
   HookeJeevesResult,
