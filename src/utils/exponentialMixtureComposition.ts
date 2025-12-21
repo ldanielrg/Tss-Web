@@ -1,17 +1,15 @@
-// src/utils/exponentialMixtureComposition.ts
-
 export type ExpMixParams = {
   beta1: number;
   beta2: number;
-  p: number;   // prob. componente 1
-  N: number;   // tamaño muestra
-  bins?: number; // opcional: bins para histograma
+  p: number;   
+  N: number;   
+  bins?: number; 
 };
 
 export type ExpMixRow = {
   i: number;
-  R_sel: number; // U0 selector
-  U: number;     // U1 para inversa
+  R_sel: number; 
+  U: number;     
   X: number;
   componente: "x1 (β1)" | "x2 (β2)";
 };
@@ -27,8 +25,8 @@ export type ExpMixStats = {
   meanTheor: number;
   varTheor: number;
 
-  ks: number;       // KS aproximado contra CDF teórica
-  maxXUsed: number; // máximo robusto usado para hist/plots
+  ks: number;       
+  maxXUsed: number; 
 };
 
 export type ExpMixChartHistogram = { x: number; hist: number; pdf: number }[];
@@ -36,15 +34,12 @@ export type ExpMixChartEcdf = { x: number; ecdf: number; cdf: number }[];
 
 export type ExpMixResult = {
   rows: ExpMixRow[];
-  // Para scatter inversa
   points: { u: number; x: number }[];
   guide: { u: number; x1: number; x2: number }[];
   yMax: number;
 
-  // Para selector (composición)
   selectorPoints: { i: number; r: number; picked: 1 | 2 }[];
 
-  // Para validación
   histogram: ExpMixChartHistogram;
   ecdf: ExpMixChartEcdf;
 
@@ -63,8 +58,8 @@ export function simulateExpMixtureByComposition(params: ExpMixParams): ExpMixRes
   let n1 = 0;
 
   for (let i = 1; i <= N; i++) {
-    const R_sel = Math.random(); // U0 selector
-    const U = Math.random();     // U1 inversa
+    const R_sel = Math.random(); 
+    const U = Math.random();    
 
     let X: number;
     let componente: ExpMixRow["componente"];
@@ -92,7 +87,6 @@ export function simulateExpMixtureByComposition(params: ExpMixParams): ExpMixRes
   const n2 = N - n1;
   const pHat = n1 / N;
 
-  // Curvas guía para inversa: F^{-1}(u) = -ln(1-u)/beta
   const guideN = 300;
   const guide: { u: number; x1: number; x2: number }[] = [];
   for (let k = 0; k < guideN; k++) {
@@ -106,18 +100,14 @@ export function simulateExpMixtureByComposition(params: ExpMixParams): ExpMixRes
 
   const yMax = Math.max(robustYMax(xs, 0.99), maxGuideY(guide));
 
-  // --- Validación: Histograma (densidad) vs PDF teórica ---
   const maxXUsed = robustYMax(xs, 0.995);
   const histogram = buildHistogramDensity(xs, bins, maxXUsed, (x) => pdfMix(x, beta1, beta2, p));
 
-  // --- Validación: ECDF vs CDF teórica ---
   const ecdf = buildEcdfVsCdf(xs, (x) => cdfMix(x, beta1, beta2, p), 450);
 
-  // --- Estadísticos empíricos ---
   const meanEmp = mean(xs);
   const varEmp = variance(xs, meanEmp);
 
-  // --- Teóricos de la mezcla ---
   const mu1 = 1 / beta1;
   const mu2 = 1 / beta2;
   const var1 = 1 / (beta1 * beta1);
@@ -127,7 +117,6 @@ export function simulateExpMixtureByComposition(params: ExpMixParams): ExpMixRes
   const secondMoment = p * (var1 + mu1 * mu1) + (1 - p) * (var2 + mu2 * mu2);
   const varTheor = secondMoment - meanTheor * meanTheor;
 
-  // KS aproximado
   const ks = approxKS(xs, (x) => cdfMix(x, beta1, beta2, p));
 
   return {
@@ -152,8 +141,6 @@ export function simulateExpMixtureByComposition(params: ExpMixParams): ExpMixRes
   };
 }
 
-/* ====================== Distribución mezcla ====================== */
-
 export function pdfMix(x: number, beta1: number, beta2: number, p: number): number {
   if (x < 0) return 0;
   return p * beta1 * Math.exp(-beta1 * x) + (1 - p) * beta2 * Math.exp(-beta2 * x);
@@ -165,8 +152,6 @@ export function cdfMix(x: number, beta1: number, beta2: number, p: number): numb
   const F2 = 1 - Math.exp(-beta2 * x);
   return p * F1 + (1 - p) * F2;
 }
-
-/* ====================== Helpers: Histogram/ECDF ====================== */
 
 function buildHistogramDensity(
   xs: number[],
@@ -205,7 +190,6 @@ function buildEcdfVsCdf(
 
   const sorted = [...xs].sort((a, b) => a - b);
 
-  // Downsample uniforme en índices
   const m = Math.min(maxPoints, n);
   const out: { x: number; ecdf: number; cdf: number }[] = [];
 
@@ -217,15 +201,12 @@ function buildEcdfVsCdf(
     out.push({ x, ecdf: ec, cdf: cdf(x) });
   }
 
-  // Asegura arranque desde x=0 (visual)
   if (out.length && out[0].x > 0) {
     out.unshift({ x: 0, ecdf: 0, cdf: cdf(0) });
   }
 
   return out;
 }
-
-/* ====================== Helpers: estadísticos ====================== */
 
 function mean(xs: number[]): number {
   let s = 0;
@@ -260,8 +241,6 @@ function approxKS(xs: number[], cdf: (x: number) => number): number {
   return dMax;
 }
 
-/* ====================== Helpers: robustos y misc ====================== */
-
 function robustYMax(xs: number[], q: number): number {
   if (!xs.length) return 1;
   const sorted = [...xs].sort((a, b) => a - b);
@@ -287,7 +266,6 @@ function maxGuideY(guide: { u: number; x1: number; x2: number }[]): number {
 }
 
 function defaultBins(N: number): number {
-  // regla simple (Sturges-ish suave)
   const b = Math.round(1 + 3.3 * Math.log10(Math.max(2, N)));
   return clampInt(b * 3, 20, 80);
 }

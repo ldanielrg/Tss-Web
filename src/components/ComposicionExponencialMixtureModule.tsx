@@ -1,5 +1,3 @@
-// src/components/ComposicionExponencialMixtureModule.tsx
-
 import React, { useMemo, useState } from "react";
 import DataTableModal from "../simulstat_parte1/components/DataTableModal";
 import InverseScatterWithGuides from "./charts/InverseScatterWithGuides";
@@ -268,8 +266,8 @@ const ComposicionExponencialMixtureModule: React.FC = () => {
               <b>Generar dos números aleatorios</b> independientes R1 y R2 en (0,1):
               <div className="mt-2 border rounded bg-gray-50 p-3">
                 <pre className="text-xs bg-white border rounded p-2 overflow-auto">
-{`const R1 = Math.random(); // selector (U0)
-const R2 = Math.random(); // inversa  (U1)`}
+                  {`const R1 = Math.random(); // selector (U0)
+                  const R2 = Math.random(); // inversa  (U1)`}
                 </pre>
               </div>
             </li>
@@ -278,11 +276,11 @@ const R2 = Math.random(); // inversa  (U1)`}
               <b>Escoger con R1 una subfunción</b>:
               <div className="mt-2 border rounded bg-gray-50 p-3 overflow-auto">
                 <pre className="text-xs bg-white border rounded p-2">
-{`si (R1 < p)
-    escoger f1(x) → simulara valores de la distribucion para x1
-sino
-    escoger f2(x) → simulara valores de la distribucion para x2
-Finsi`}
+                  {`si (R1 < p)
+                      escoger f1(x) → simulara valores de la distribucion para x1
+                  sino
+                      escoger f2(x) → simulara valores de la distribucion para x2
+                  Finsi`}
                 </pre>
               </div>
               <div className="mt-2 text-xs text-gray-600">
@@ -321,14 +319,14 @@ Finsi`}
 
         <StepCard title="Paso 5 — Pseudocódigo (implementación)">
           <pre className="text-xs bg-gray-50 border rounded p-3 overflow-auto">
-{`Para i=1..N:
-  R1 ← U(0,1)   # selector
-  R2 ← U(0,1)   # inversa
-  Si R1 ≤ p:
-     X ← -ln(1-R2)/β1
-  Si no:
-     X ← -ln(1-R2)/β2
-  guardar (i, R1, R2, X, componente)`}
+          {`Para i=1..N:
+            R1 ← U(0,1)   # selector
+            R2 ← U(0,1)   # inversa
+            Si R1 ≤ p:
+              X ← -ln(1-R2)/β1
+            Si no:
+              X ← -ln(1-R2)/β2
+            guardar (i, R1, R2, X, componente)`}
           </pre>
         </StepCard>
 

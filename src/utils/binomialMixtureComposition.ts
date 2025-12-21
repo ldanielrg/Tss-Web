@@ -1,18 +1,16 @@
-// src/utils/binomialMixtureComposition.ts
-
 export type BinomialMixtureParams = {
   n: number;
   theta1: number;
   theta2: number;
-  p: number; // prob elegir componente 1
-  N: number; // tamaño de muestra
-  seed: number; // para LCG
+  p: number; 
+  N: number; 
+  seed: number; 
 };
 
 export type BinomialMixtureRow = {
   i: number;
-  R_sel: number; // R1
-  U: number;     // R2
+  R_sel: number; 
+  U: number;     
   X: number;
   componente: "x1 (θ1)" | "x2 (θ2)";
 };
@@ -32,17 +30,13 @@ export type BinomialMixtureResult = {
 
 export function simulateBinomialMixtureByComposition(params: BinomialMixtureParams): BinomialMixtureResult {
   const { n, theta1, theta2, p, N, seed } = params;
-
-  // Generador congruencial mixto simple (LCG)
   const rng = makeLCG(seed);
 
-  // PMFs y CDFs de cada componente
   const pmf1 = pmfBinomial(n, theta1);
   const pmf2 = pmfBinomial(n, theta2);
   const cdf1 = cdfFromPmf(pmf1);
   const cdf2 = cdfFromPmf(pmf2);
 
-  // PMF mezcla teórica
   const pmfMix = Array.from({ length: n + 1 }, (_, x) => p * pmf1[x] + (1 - p) * pmf2[x]);
 
   const rows: BinomialMixtureRow[] = [];
@@ -51,8 +45,8 @@ export function simulateBinomialMixtureByComposition(params: BinomialMixturePara
 
   // Simulación por composición
   for (let i = 1; i <= N; i++) {
-    const R1 = rng(); // selector
-    const R2 = rng(); // inversa
+    const R1 = rng(); 
+    const R2 = rng(); 
 
     let X: number;
     let componente: BinomialMixtureRow["componente"];
@@ -70,7 +64,6 @@ export function simulateBinomialMixtureByComposition(params: BinomialMixturePara
     inversePoints.push({ u: R2, x: X });
   }
 
-  // PMF empírica
   const pmfEmp = counts.map((c) => c / N);
 
   const pmfData = Array.from({ length: n + 1 }, (_, x) => ({
@@ -114,20 +107,16 @@ export function simulateBinomialMixtureByComposition(params: BinomialMixturePara
   };
 }
 
-/* ===================== Helpers ===================== */
-
 // LCG (mixto): X_{k+1} = (aX_k + c) mod m, U = X/m
 function makeLCG(seed: number) {
   let x = Math.trunc(seed) >>> 0;
 
-  // parámetros típicos (m = 2^32)
   const a = 1664525;
   const c = 1013904223;
   const m = 2 ** 32;
 
   return () => {
     x = (a * x + c) >>> 0;
-    // evita 0 exacto
     const u = (x + 1) / (m + 1);
     return u;
   };

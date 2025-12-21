@@ -1,6 +1,3 @@
-// src/components/Ej1_8Charts.tsx
-
-//import React from "react";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -15,7 +12,6 @@ import {
   ReferenceLine,
 } from "recharts";
 
-/** Diagrama tipo “áreas acumuladas” como la imagen (A1 y A1+A2) */
 export function Ej1_8AreaDiagram({
   a1Label = "A₁",
   a12Label = "A₁ + A₂",
@@ -31,33 +27,26 @@ export function Ej1_8AreaDiagram({
     <div className="w-full overflow-auto">
       <div className="border rounded bg-gray-50 p-3 inline-block">
         <svg width="520" height="220" viewBox="0 0 520 220">
-          {/* Axes */}
+ 
           <line x1="40" y1="190" x2="500" y2="190" stroke="#1f3b6d" strokeWidth="4" />
           <line x1="40" y1="190" x2="40" y2="20" stroke="#1f3b6d" strokeWidth="4" />
 
-          {/* y labels */}
           <text x="15" y="195" fontSize="14" fill="#1f3b6d">0</text>
 
           <text x="15" y="120" fontSize="14" fill="#2b6cb0">{a1Label}</text>
           <text x="15" y="55" fontSize="14" fill="#2b6cb0">{a12Label}</text>
 
-          {/* dashed horizontal guides */}
           <line x1="40" y1="110" x2="430" y2="110" stroke="#2f855a" strokeWidth="2" strokeDasharray="6 6" />
           <line x1="40" y1="45" x2="430" y2="45" stroke="#2f855a" strokeWidth="2" strokeDasharray="6 6" />
 
-          {/* Rectangles */}
-          {/* f1 area (orange outline) */}
           <rect x="155" y="110" width="110" height="80" fill="none" stroke="#dd6b20" strokeWidth="3" />
           <text x="275" y="175" fontSize="16" fill="#111827">{f1Label}</text>
 
-          {/* f2 area (red outline) */}
           <rect x="265" y="45" width="110" height="65" fill="none" stroke="#e53e3e" strokeWidth="3" />
           <text x="385" y="85" fontSize="16" fill="#111827">{f2Label}</text>
 
-          {/* A1 bracket-ish marker (orange vertical line) */}
           <line x1="155" y1="190" x2="155" y2="110" stroke="#dd6b20" strokeWidth="3" />
 
-          {/* right bracket for A1+A2 (red vertical line) */}
           <line x1="430" y1="45" x2="430" y2="110" stroke="#e53e3e" strokeWidth="3" />
         </svg>
 

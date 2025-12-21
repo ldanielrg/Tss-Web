@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Divide, Play, Clock } from "lucide-react";
 
 import DataTableModal from "../simulstat_parte1/components/DataTableModal";
@@ -8,7 +8,6 @@ import InverseScatterWithGuides from "../components/charts/InverseScatterWithGui
 import { simulateBinomialMixture } from "../utils/mixtures";
 
 export default function ComposicionBinomialMixtureModule() {
-  // Inputs (como strings para no romper UX)
   const [n, setN] = useState("10");
   const [theta1, setTheta1] = useState("0.6");
   const [theta2, setTheta2] = useState("0.3");

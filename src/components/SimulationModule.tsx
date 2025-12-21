@@ -18,10 +18,10 @@ import ServiceSystemsModule from './ServiceSystemsModule';
 import ComposicionModule from './ComposicionModule';
 import ConposicionTriangularModule from './ComposicionTriangularModule';
 
-// ✅ NUEVO: tu ejercicio (Ej 1–8 Mezcla Exponencial por Composición)
+//Composición, mesclar Exponencial 
 import ComposicionExponencialMixtureModule from './ComposicionExponencialMixtureModule';
 
-// ✅ NUEVO: Mezcla Binomial por Composición (Ejercicio nuevo)
+//Composición, mezclar Binomial
 import ComposicionBinomialMixtureModule from './ComposicionBinomialMixtureModule';
 
 
@@ -46,8 +46,8 @@ const SimulationModule: React.FC = () => {
     | 'investment-project'
     | 'composicion'
     | 'composicion-triangular'
-    | 'composicion-exp-mixture'   // ✅ NUEVO
-    | 'composicion-binomial-mixture' // ✅ NUEVO (agregado)
+    | 'composicion-exp-mixture'  
+    | 'composicion-binomial-mixture' 
     | 'unloading-team'
     | 'machine-mechanic'
   >('queue');
@@ -215,7 +215,7 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* ✅ NUEVO: Ejercicio 1–8 (Mezcla Exponencial por Composición) */}
+            {/* Mezcla Exponencial por Composición*/}
             <button
               onClick={() => setSelectedProblem('composicion-exp-mixture')}
               className={`p-4 rounded-lg border-2 transition-colors ${
@@ -233,7 +233,7 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* ✅ NUEVO: Mezcla Binomial por Composición */}
+            {/* Mezcla Binomial por Composición */}
             <button
               onClick={() => setSelectedProblem('composicion-binomial-mixture')}
               className={`p-4 rounded-lg border-2 transition-colors ${
@@ -250,12 +250,10 @@ const SimulationModule: React.FC = () => {
                 </div>
               </div>
             </button>
-
-            {/* Rechazo (si lo agregas luego, descomenta y usa tu key) */}
           </div>
         </div>
 
-        {/* ============ PARTE 2 ============ */}
+        {/* PARTE 2 */}
         <div>
           <div className="mb-3">
             <h4 className="text-sm font-semibold text-gray-900">Parte 2</h4>
@@ -448,9 +446,9 @@ const SimulationModule: React.FC = () => {
         <ComposicionModule />
       ) : selectedProblem === 'composicion-triangular' ? (
         <ConposicionTriangularModule />
-      ) : selectedProblem === 'composicion-exp-mixture' ? (   // ✅ NUEVO
+      ) : selectedProblem === 'composicion-exp-mixture' ? (  
         <ComposicionExponencialMixtureModule />
-      ) : selectedProblem === 'composicion-binomial-mixture' ? ( // ✅ NUEVO (agregado)
+      ) : selectedProblem === 'composicion-binomial-mixture' ? ( 
         <ComposicionBinomialMixtureModule />
       ) : selectedProblem === 'machine-mechanic' ? (
         <MachineMechanicModule />
