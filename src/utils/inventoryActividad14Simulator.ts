@@ -241,8 +241,6 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
     costHolding += costHoldingToday;
     costShortage += costShortageToday;
 
-    const totalCostToday = costOrderToday + costHoldingToday + costShortageToday;
-
     if (invFinal <= 0 && demand > 0) stockoutDays++;
 
     sumOnHandEnd += invFinal;
@@ -423,7 +421,7 @@ function makeParamsWithQR(base: InventoryA14Params, q: number, R: number): Inven
   };
 }
 
-function withinBounds(q: number, R: number, base: InventoryA14Params): boolean {
+function withinBounds(q: number, R: number): boolean {
   return q > 0 && R >= 0;
 }
 
@@ -480,7 +478,7 @@ export function runHookeJeeves(
     q = clampInt(q, settings.qMin, settings.qMax);
     R = clampInt(R, settings.RMin, settings.RMax);
 
-    if (!withinBounds(q, R, baseParams)) return null;
+    if (!withinBounds(q, R)) return null;
 
     const { aggregate } = evaluatePolicy(makeParamsWithQR(baseParams, q, R));
     const cand: Candidate = { q, R, cost: aggregate.meanCost, agg: aggregate };
