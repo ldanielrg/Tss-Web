@@ -17,7 +17,7 @@ const DEFAULT_PARAMS: InverseTransformEj2Params = {
   c: 5,
   n: 10000,
   seed: 20250915,
-  side: 'left',
+  side: 'full',
   bins: 25,
 };
 
@@ -153,9 +153,9 @@ Var(X) = (c-b)²/18`}</pre>
                 onChange={(e) => setP((x) => ({ ...x, side: e.target.value as any }))}
                 className={`w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 ${theme.ring} focus:border-transparent`}
                 >
+                <option value="full">Triángulo completo [a,c]</option>
                 <option value="left">Izq [a,b]</option>
                 <option value="right">Der [b,c]</option>
-                <option value="full">Triángulo completo [a,c]</option>
                 </select>
               </div>
 
