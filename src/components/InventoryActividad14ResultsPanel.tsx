@@ -1,9 +1,7 @@
-// src/components/InventoryActividad14ResultsPanel.tsx
 import { useMemo, useState } from "react";
 import { BarChart2, Table2, LineChart as LineIcon } from "lucide-react";
 import type { InventoryA14Summary } from "../types/inventoryActividad14";
 
-// ✅ Gráficas (Recharts)
 import {
   ResponsiveContainer,
   LineChart,
@@ -41,7 +39,7 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
 
   const maxDays = rows.length;
 
-  // ====== Columnas tabla diaria (formato Excel) ======
+  //Columnas tabla diaria
   const dayCols = useMemo(() => {
     const isP2 = summary?.problem === "P2";
     const base = [
@@ -74,7 +72,7 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
     ];
   }, [summary?.problem]);
 
-  // ====== Datos para gráficas (una replicación ejemplo) ======
+  //Datos para gráficas diarias
   const chartDaily = useMemo(() => {
     if (!summary || rows.length === 0) return [];
 
@@ -112,11 +110,9 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
     });
   }, [summary, rows]);
 
-  // ====== Convergencia Hooke & Jeeves (mejor costo por iteración) ======
   const chartHJ = useMemo(() => {
     if (!hj) return [];
 
-    // Agrupamos por iteración: min costo probado en esa iter y bestCost (acumulado)
     const byIter = new Map<number, { iter: number; minCost: number; bestCost: number }>();
 
     for (const row of hj.table) {
@@ -126,14 +122,12 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
         byIter.set(it, { iter: it, minCost: row.cost, bestCost: row.bestCost });
       } else {
         prev.minCost = Math.min(prev.minCost, row.cost);
-        // bestCost viene acumulando el mejor global; tomamos el último observado
         prev.bestCost = row.bestCost;
       }
     }
 
     const arr = Array.from(byIter.values()).sort((a, b) => a.iter - b.iter);
 
-    // Si por ruido o formato faltan, garantizamos monotonicidad de bestCost
     let running = Number.POSITIVE_INFINITY;
     return arr.map((x) => {
       running = Math.min(running, x.bestCost);
@@ -141,7 +135,6 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
     });
   }, [hj]);
 
-  // ====== UI base ======
   if (!summary && !isSimulating) {
     return (
       <div className="bg-white p-10 rounded-lg shadow-md text-center">
@@ -156,7 +149,7 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
 
   return (
     <div className="space-y-6">
-      {/* ===== Resumen ===== */}
+      {/* Resumen*/}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <BarChart2 className="w-5 h-5 text-purple-600" />
@@ -225,7 +218,7 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
         )}
       </div>
 
-      {/* ====== GRÁFICAS ====== */}
+      {/* Gráficas */}
       {summary && chartDaily.length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
           <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -333,7 +326,7 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
         </div>
       )}
 
-      {/* ====== Tabla diaria ====== */}
+      {/* tabla*/}
       {summary && rows.length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -416,7 +409,7 @@ export default function InventoryActividad14ResultsPanel({ summary, isSimulating
         </div>
       )}
 
-      {/* ====== Hooke & Jeeves: tabla + gráfica convergencia ====== */}
+      {/* Hooke & Jeeves: tabla + gráfica convergencia */}
       {summary?.hookeJeeves && (
         <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
           <div className="flex items-center justify-between gap-3 flex-wrap">

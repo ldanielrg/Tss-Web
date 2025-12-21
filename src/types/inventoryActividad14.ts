@@ -1,10 +1,7 @@
-// src/types/inventoryActividad14.ts
-
 export type InventoryA14Problem = "P1" | "P2";
-
 export type DiscreteOutcome<T extends number | string> = {
   value: T;
-  p: number; // Probabilidad (0..1), debe sumar 1 en total
+  p: number; 
 };
 
 export type DiscreteDistribution<T extends number> = {
@@ -13,11 +10,11 @@ export type DiscreteDistribution<T extends number> = {
 };
 
 export type InventoryA14Costs = {
-  orderCost: number; // K: costo por orden
-  holdingCostAnnual: number; // h anual por unidad (p.ej. 26)
-  shortageCostP1: number; // p1: costo por unidad faltante (P1)
-  shortageCostWaitP2: number; // P2: costo si espera (por unidad) (20)
-  shortageCostNoWaitP2: number; // P2: costo si no espera / se pierde (50)
+  orderCost: number; 
+  holdingCostAnnual: number; 
+  shortageCostP1: number; 
+  shortageCostWaitP2: number; 
+  shortageCostNoWaitP2: number; 
 };
 
 export type HookeJeevesSettings = {
@@ -25,40 +22,30 @@ export type HookeJeevesSettings = {
   R0: number;
   stepQ: number;
   stepR: number;
-  reduceFactor: number; // 0<factor<1
+  reduceFactor: number; 
   minStepQ: number;
   minStepR: number;
   maxIter: number;
-
-  // límites (para evitar valores imposibles)
   qMin: number;
   qMax: number;
   RMin: number;
   RMax: number;
-
-  replications: number; // N simulaciones por punto (q,R)
-  seed: number; // semilla base (reproducible)
+  replications: number; 
+  seed: number; 
 };
 
 export type InventoryA14Params = {
   problem: InventoryA14Problem;
-
-  days: number; // 260
-  initialOnHand: number; // 15
-
+  days: number; 
+  initialOnHand: number; 
   q: number;
   R: number;
-
   costs: InventoryA14Costs;
-
-  demandDistP1: DiscreteDistribution<number>; // 0..8
-  leadTimeDistP1: DiscreteDistribution<number>; // 1..4
-
-  demandDistP2: DiscreteDistribution<number>; // 25..34
-  leadTimeDistP2: DiscreteDistribution<number>; // 1..4
-  waitDistP2: DiscreteDistribution<number>; // 0..4
-
-  // Replicaciones para evaluar una política fija (no H&J)
+  demandDistP1: DiscreteDistribution<number>; 
+  leadTimeDistP1: DiscreteDistribution<number>; 
+  demandDistP2: DiscreteDistribution<number>; 
+  leadTimeDistP2: DiscreteDistribution<number>; 
+  waitDistP2: DiscreteDistribution<number>; 
   replications: number;
   seed: number;
 };
@@ -66,32 +53,25 @@ export type InventoryA14Params = {
 export type InventoryA14DayRow = {
   R: number;
   day: number;
-
   invInitial: number;
   uDemand: number;
   demand: number;
-
   invFinal: number;
-
   shortage: number;
   shortageAccum: number;
-
   orderPlaced: boolean;
   uLeadTime?: number;
   leadTimeDays?: number;
   arrivalDay?: number | null;
-
   costOrder: number;
   costShortage: number;
   invAvg: number;
-
-  // extras P2 (opcionales)
   uWait?: number;
   waitDays?: number;
-  expiredLost?: number; // unidades que expiraron hoy (se pierden)
-  waitAdded?: number; // unidades que entraron a cola de espera hoy
-  waitFulfilled?: number; // unidades atendidas hoy desde espera
-  lostNoWait?: number; // unidades perdidas por W=0 hoy
+  expiredLost?: number; 
+  waitAdded?: number; 
+  waitFulfilled?: number;
+  lostNoWait?: number; 
 };
 
 export type InventoryA14ReplicationResult = {
@@ -101,13 +81,9 @@ export type InventoryA14ReplicationResult = {
   costOrder: number;
   costHolding: number;
   costShortage: number;
-
-  // métricas útiles para gráficas
   avgOnHand: number;
   stockoutDays: number;
   totalShortageUnits: number;
-
-  // P2 extras
   totalLostUnits?: number;
   totalWaitFulfilledUnits?: number;
 };
@@ -124,12 +100,10 @@ export type InventoryA14PolicyAggregate = {
   meanCostHolding: number;
   meanCostShortage: number;
 
-  // métricas
   meanAvgOnHand: number;
   meanStockoutDays: number;
   meanTotalShortageUnits: number;
 
-  // P2 extras
   meanTotalLostUnits?: number;
   meanTotalWaitFulfilledUnits?: number;
 };
@@ -158,13 +132,10 @@ export type HookeJeevesResult = {
 export type InventoryA14Summary = {
   problem: InventoryA14Problem;
 
-  // Resultado de simular una política fija (q,R)
   policyResult?: InventoryA14PolicyAggregate;
-  oneReplicationExample?: InventoryA14ReplicationResult; // para tabla diaria (formato Excel)
+  oneReplicationExample?: InventoryA14ReplicationResult; 
 
-  // Resultado de optimización H&J
   hookeJeeves?: HookeJeevesResult;
 
-  // Para mostrar en panel “parámetros usados”
   paramsSnapshot: InventoryA14Params;
 };

@@ -1,4 +1,3 @@
-// src/components/InventoryActividad14SimulationModule.tsx
 import { useMemo, useState } from "react";
 import { Play, Package, Search } from "lucide-react";
 import type {
@@ -24,7 +23,6 @@ const DEFAULTS = {
     shortageCostWaitP2: 20,
     shortageCostNoWaitP2: 50,
   },
-  // Distribuciones exactas del PDF
   demandDistP1: {
     name: "Demanda P1",
     outcomes: [
@@ -166,8 +164,7 @@ export default function InventoryActividad14SimulationModule({
         RMin,
         RMax,
       });
-
-      // Simulamos una vez la política óptima para tener tabla diaria de ejemplo
+      
       const bestParams: InventoryA14Params = {
         ...baseParams,
         q: hj.best.q,

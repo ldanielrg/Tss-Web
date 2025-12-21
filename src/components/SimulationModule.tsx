@@ -13,7 +13,7 @@ import InventorySimulationModule from './InventorySimulationModule';
 import InventoryResultsPanel from './InventoryResultsPanel';
 import type { InventorySimulationSummary } from '../types/inventorySimulation';
 
-// ✅ NUEVO: Actividad 1_4 Parte 2 (Problema 1 + Problema 2)
+//Actividad 1_4 Parte 2 (Problema 1 + Problema 2)
 import InventoryActividad14SimulationModule from './InventoryActividad14SimulationModule';
 import InventoryActividad14ResultsPanel from './InventoryActividad14ResultsPanel';
 import type { InventoryA14Summary } from '../types/inventoryActividad14';
@@ -42,7 +42,7 @@ const SimulationModule: React.FC = () => {
     | 'inventory'
     | 'camiones'
     | 'inventoryRQ'
-    | 'inventory-actividad14' // ✅ NUEVO
+    | 'inventory-actividad14' 
     | 'service-serie'
     | 'service-banco'
     | 'service-estacionamiento'
@@ -82,7 +82,7 @@ const SimulationModule: React.FC = () => {
   // Inventario (q,R)
   const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null);
 
-  // ✅ NUEVO: Actividad 1_4 (Parte 2) summary
+  // Actividad 1_4 Parte 2
   const [inventoryA14Summary, setInventoryA14Summary] = useState<InventoryA14Summary | null>(null);
 
   const runQueueSimulation = () => {
@@ -303,7 +303,7 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* ✅ NUEVO: Actividad 1_4 */}
+            {/* Actividad 1_4 */}
             <button
               onClick={() => setSelectedProblem('inventory-actividad14')}
               className={`p-4 rounded-lg border-2 transition-colors ${
@@ -690,7 +690,7 @@ const SimulationModule: React.FC = () => {
               />
             )}
 
-            {/* ✅ NUEVO: Actividad 1_4 (Parte 2) */}
+            {/*Actividad 1_4 (Parte 2) */}
             {selectedProblem === 'inventory-actividad14' && (
               <InventoryActividad14SimulationModule
                 isSimulating={isSimulating}
@@ -712,7 +712,7 @@ const SimulationModule: React.FC = () => {
               <InventoryResultsPanel summary={inventorySummary} isSimulating={isSimulating} />
             )}
 
-            {/* ✅ NUEVO: Resultados Actividad 1_4 */}
+            {/* Resultados Actividad 1_4 */}
             {selectedProblem === 'inventory-actividad14' && (
               <InventoryActividad14ResultsPanel summary={inventoryA14Summary} isSimulating={isSimulating} />
             )}
@@ -720,7 +720,7 @@ const SimulationModule: React.FC = () => {
             {/* Resultados generales (queue/inventory básico) */}
             {selectedProblem !== 'camiones' &&
               selectedProblem !== 'inventoryRQ' &&
-              selectedProblem !== 'inventory-actividad14' && // ✅ NUEVO: excluir
+              selectedProblem !== 'inventory-actividad14' && 
               results.length > 0 && (
                 <div className="bg-white p-6 rounded-lg shadow-md">
                   <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
@@ -769,7 +769,7 @@ const SimulationModule: React.FC = () => {
 
             {selectedProblem !== 'camiones' &&
               selectedProblem !== 'inventoryRQ' &&
-              selectedProblem !== 'inventory-actividad14' && // ✅ NUEVO: excluir
+              selectedProblem !== 'inventory-actividad14' && 
               results.length === 0 &&
               !isSimulating && (
                 <div className="bg-white p-12 rounded-lg shadow-md text-center">

@@ -1,4 +1,3 @@
-// src/utils/inventoryActividad14Simulator.ts
 import type {
   DiscreteDistribution,
   HookeJeevesResult,
@@ -9,7 +8,6 @@ import type {
   InventoryA14ReplicationResult,
 } from "../types/inventoryActividad14";
 
-/** RNG reproducible (Mulberry32) */
 function mulberry32(seed: number) {
   let a = seed >>> 0;
   return function rng() {
@@ -29,38 +27,30 @@ function validateDist(dist: DiscreteDistribution<number>) {
   const sum = dist.outcomes.reduce((acc, o) => acc + o.p, 0);
   const eps = 1e-9;
   if (Math.abs(sum - 1) > 1e-6) {
-    // No tiramos error duro para no romper UI, pero sí avisamos en consola.
     console.warn(`[${dist.name}] Probabilidades no suman 1. Suma=`, sum);
   }
-  // p negativas
+
   if (dist.outcomes.some((o) => o.p < -eps)) {
     console.warn(`[${dist.name}] Hay probabilidades negativas.`);
   }
 }
 
 function sampleDiscrete(dist: DiscreteDistribution<number>, u: number): number {
-  // Asume u en [0,1)
   let acc = 0;
   for (const o of dist.outcomes) {
     acc += o.p;
     if (u <= acc) return o.value;
   }
-  // Por redondeos, devuelve último
   return dist.outcomes[dist.outcomes.length - 1]?.value ?? 0;
 }
 
-/** Inventario promedio diario tipo tu Excel (incluye caso stockout con consumo lineal) */
 function dailyInventoryAverage(invStart: number, invEnd: number, demand: number, sales: number): number {
   if (demand <= 0) {
-    // sin demanda, inventario constante
     return invStart;
   }
   if (invEnd > 0) {
-    // no stockout
     return (invStart + invEnd) / 2;
   }
-  // stockout: consumo lineal, el inventario baja a 0 antes de terminar el día
-  // fracción del día con inventario >0 = sales / demand
   const frac = Math.max(0, Math.min(1, sales / demand));
   return (invStart * frac) / 2;
 }
@@ -78,23 +68,13 @@ type SimCoreResult = {
   stockoutDays: number;
   totalShortageUnits: number;
 
-  // P2 extras
   totalLostUnits?: number;
   totalWaitFulfilledUnits?: number;
 };
 
-/**
- * Simula una replicación (260 días) para un (q,R).
- * - P1: backorder acumulado (BO)
- * - P2: faltante puede esperar W días (cola con expiración). Si expira -> se pierde.
- *
- * Convención de llegada (coincide con tu tabla):
- * - Orden al final del día t con lead time L -> llega al INICIO del día (t + L + 1)
- */
 function simulateOneReplication(params: InventoryA14Params, seed: number): SimCoreResult {
   const rng = mulberry32(seed);
 
-  // Validación suave
   validateDist(params.problem === "P1" ? params.demandDistP1 : params.demandDistP2);
   validateDist(params.problem === "P1" ? params.leadTimeDistP1 : params.leadTimeDistP2);
   if (params.problem === "P2") validateDist(params.waitDistP2);
@@ -103,14 +83,10 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
 
   let onHand = params.initialOnHand;
 
-  // pendientes de llegada
   let pendingOrders: PendingOrder[] = [];
 
-  // P1: BO simple
   let BO = 0;
 
-  // P2: cola por “días restantes” (índice r = días restantes para expirar)
-  // r=0 expira HOY al inicio del día (después del shift)
   const WMAX = 4;
   let waitBuckets = new Array(WMAX + 1).fill(0) as number[];
 
@@ -128,7 +104,6 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
   const rows: InventoryA14DayRow[] = [];
 
   for (let day = 1; day <= params.days; day++) {
-    // ========== 1) Llegadas al inicio del día ==========
     const arrivalsToday = pendingOrders
       .filter((o) => o.arrivalDay === day)
       .reduce((acc, o) => acc + o.qty, 0);
@@ -138,34 +113,26 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
       pendingOrders = pendingOrders.filter((o) => o.arrivalDay !== day);
     }
 
-    // P2: primero expiran los que ya se quedaron sin tiempo (shift)
     let expiredToday = 0;
     if (params.problem === "P2") {
       expiredToday = waitBuckets[0] || 0;
       if (expiredToday > 0) {
-        // Si ya habíamos cargado 20 por “esperar”, aquí agregamos el diferencial para llegar a 50
-        // total por unidad perdida = 50
         const extraPenalty = params.costs.shortageCostNoWaitP2 - params.costs.shortageCostWaitP2;
         costShortage += expiredToday * extraPenalty;
         totalLostUnits += expiredToday;
       }
 
-      // shift: r=1 pasa a r=0, etc.
       const newBuckets = new Array(WMAX + 1).fill(0) as number[];
       for (let r = 1; r <= WMAX; r++) newBuckets[r - 1] = waitBuckets[r];
       waitBuckets = newBuckets;
     }
 
-    // P1: atender backorder acumulado (BO) al inicio del día (si llega stock)
     if (params.problem === "P1" && BO > 0 && onHand > 0) {
       const fulfill = Math.min(onHand, BO);
       onHand -= fulfill;
       BO -= fulfill;
-      // costo de faltante en P1 se carga cuando ocurre el faltante (no al cumplir)
     }
 
-    // P2: atender “esperas” vigentes (prioridad: los que expiran antes -> r=0,1,... en nuestro esquema shift ya hecho)
-    // Tras shift, r=0 significa expira al inicio del próximo día, así que se atiende primero r=0.
     let waitFulfilledToday = 0;
     if (params.problem === "P2" && onHand > 0) {
       for (let r = 0; r <= WMAX; r++) {
@@ -182,14 +149,12 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
 
     const invInitial = onHand;
 
-    // ========== 2) Generar Demanda ==========
     const uDemand = rng();
     const demand =
       params.problem === "P1"
         ? sampleDiscrete(params.demandDistP1, uDemand)
         : sampleDiscrete(params.demandDistP2, uDemand);
 
-    // ========== 3) Satisfacer Demanda ==========
     const sales = Math.min(onHand, demand);
     onHand -= sales;
 
@@ -215,18 +180,15 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
       shortageAccum = waitBuckets.reduce((a, b) => a + b, 0);
 
       if (shortage > 0) {
-        // Simplificación práctica (coherente con muchas hojas de clase):
-        // se toma un solo W para todo el faltante del día.
+
         uWait = rng();
         waitDays = sampleDiscrete(params.waitDistP2, uWait);
 
         if ((waitDays ?? 0) <= 0) {
-          // no espera -> perdido hoy con costo 50/u
           lostNoWait = shortage;
           totalLostUnits += shortage;
           costShortageToday += shortage * params.costs.shortageCostNoWaitP2;
         } else {
-          // espera -> entra a cola con vencimiento, costo 20/u (si expira, luego se completa a 50/u)
           const w = Math.min(WMAX, Math.max(1, waitDays));
           waitBuckets[w] += shortage;
           waitAdded = shortage;
@@ -238,14 +200,10 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
     }
 
     const invFinal = onHand;
-
-    // ========== 4) Promedio de inventario del día ==========
     const invAvg = dailyInventoryAverage(invInitial, invFinal, demand, sales);
 
-    // Holding diario
     const costHoldingToday = hDaily * invAvg;
 
-    // ========== 5) Decidir ordenar al final del día (q,R) ==========
     const onOrderQty = pendingOrders.reduce((acc, o) => acc + o.qty, 0);
     const currentBO =
       params.problem === "P1"
@@ -268,7 +226,6 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
           ? sampleDiscrete(params.leadTimeDistP1, uLeadTime)
           : sampleDiscrete(params.leadTimeDistP2, uLeadTime);
 
-      // Convención: llega al inicio del día t + L + 1
       arrivalDay = day + (leadTimeDays ?? 0) + 1;
       pendingOrders.push({ arrivalDay, qty: params.q });
 
@@ -276,13 +233,11 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
       costOrder += costOrderToday;
     }
 
-    // Para columna “Día de llegada” estilo tu tabla: mostramos el próximo pedido más cercano (si existe)
     const nextArrival =
       pendingOrders.length > 0
         ? Math.min(...pendingOrders.map((o) => o.arrivalDay))
         : null;
 
-    // ========== 6) Acumular costos ==========
     costHolding += costHoldingToday;
     costShortage += costShortageToday;
 
@@ -292,7 +247,6 @@ function simulateOneReplication(params: InventoryA14Params, seed: number): SimCo
 
     sumOnHandEnd += invFinal;
 
-    // ========== 7) Guardar fila ==========
     const row: InventoryA14DayRow = {
       R: params.R,
       day,
@@ -364,11 +318,6 @@ function std(xs: number[]) {
   return Math.sqrt(v);
 }
 
-/**
- * Evalúa una política (q,R) con N replicaciones.
- * Usa "common random numbers": para un run de optimización, mantiene las mismas semillas por réplica
- * para todas las evaluaciones, reduciendo ruido comparativo.
- */
 export function evaluatePolicy(params: InventoryA14Params): {
   aggregate: InventoryA14PolicyAggregate;
   exampleReplication: InventoryA14ReplicationResult;
@@ -428,7 +377,6 @@ export function evaluatePolicy(params: InventoryA14Params): {
   }
 
   if (!example) {
-    // fallback imposible, pero TS exige
     example = {
       rows: [],
       totalCost: 0,
@@ -476,19 +424,9 @@ function makeParamsWithQR(base: InventoryA14Params, q: number, R: number): Inven
 }
 
 function withinBounds(q: number, R: number, base: InventoryA14Params): boolean {
-  // en este archivo mantenemos solo consistencia básica:
-  // q y R deben ser >= 0
   return q > 0 && R >= 0;
 }
 
-/**
- * Hooke & Jeeves (búsqueda directa):
- * - Exploración alrededor de la base
- * - Si mejora, movimiento patrón
- * - Si no mejora, reduce pasos
- *
- * Costos por punto: promedio de N replicaciones (params.replications).
- */
 export function runHookeJeeves(
   baseParams: InventoryA14Params,
   settings: {
@@ -517,7 +455,6 @@ export function runHookeJeeves(
   const table: HookeJeevesRow[] = [];
   let iter = 0;
 
-  // Eval base
   let bestEval = evaluatePolicy(makeParamsWithQR(baseParams, baseQ, baseR));
   let best: Candidate = {
     q: baseQ,
@@ -561,10 +498,8 @@ export function runHookeJeeves(
       bestCost: best.cost,
     });
 
-    // actualizar mejor global
     if (cand.cost < best.cost) {
       best = cand;
-      // actualizar “mejor” en la fila actual (para UI es suficiente que se vea en filas siguientes)
     }
     return cand;
   };
@@ -577,7 +512,6 @@ export function runHookeJeeves(
   ) {
     iter++;
 
-    // Exploración alrededor de (baseQ, baseR)
     let localBest: Candidate = { ...best };
 
     const candidates: (Candidate | null)[] = [
@@ -587,10 +521,8 @@ export function runHookeJeeves(
       tryCandidate(baseQ, baseR - stepR, "Explora R -"),
     ];
 
-    // elegir el mejor respecto a BASE actual
     const valid = candidates.filter((c): c is Candidate => c !== null);
 
-    // Iniciamos localBest como el costo de base actual (no necesariamente best global)
     const baseAgg = evaluatePolicy(makeParamsWithQR(baseParams, baseQ, baseR)).aggregate;
     localBest = { q: baseQ, R: baseR, cost: baseAgg.meanCost, agg: baseAgg };
 
@@ -599,25 +531,20 @@ export function runHookeJeeves(
     }
 
     if (localBest.cost < baseAgg.meanCost) {
-      // mejora -> movimiento patrón
       const newBaseQ = localBest.q;
       const newBaseR = localBest.R;
 
       const patternQ = clampInt(newBaseQ + (newBaseQ - baseQ), settings.qMin, settings.qMax);
       const patternR = clampInt(newBaseR + (newBaseR - baseR), settings.RMin, settings.RMax);
 
-      // actualizar base primero
       baseQ = newBaseQ;
       baseR = newBaseR;
-
-      // registrar patrón
       const pat = tryCandidate(patternQ, patternR, "Patrón");
       if (pat && pat.cost < localBest.cost) {
         baseQ = pat.q;
         baseR = pat.R;
       }
 
-      // fila “estado” (opcional) para que se vea el mejor después de patrón
       table.push({
         iter,
         q: baseQ,
@@ -631,7 +558,7 @@ export function runHookeJeeves(
         bestCost: best.cost,
       });
     } else {
-      // No mejora -> reducir paso
+
       stepQ = Math.max(1, Math.floor(stepQ * reduceFactor));
       stepR = Math.max(1, Math.floor(stepR * reduceFactor));
 
@@ -648,7 +575,6 @@ export function runHookeJeeves(
         bestCost: best.cost,
       });
 
-      // Criterio fino de salida
       if (stepQ < settings.minStepQ && stepR < settings.minStepR) break;
     }
   }
