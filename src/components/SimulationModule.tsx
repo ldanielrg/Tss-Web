@@ -18,6 +18,12 @@ import ServiceSystemsModule from './ServiceSystemsModule';
 import ComposicionModule from './ComposicionModule';
 import ConposicionTriangularModule from './ComposicionTriangularModule';
 
+//Composición, mesclar Exponencial 
+import ComposicionExponencialMixtureModule from './ComposicionExponencialMixtureModule';
+
+//Composición, mezclar Binomial
+import ComposicionBinomialMixtureModule from './ComposicionBinomialMixtureModule';
+
 
 // Nuevas páginas
 import { InverseTransform } from '../pages/InverseTransform';
@@ -40,6 +46,8 @@ const SimulationModule: React.FC = () => {
     | 'investment-project'
     | 'composicion'
     | 'composicion-triangular'
+    | 'composicion-exp-mixture'  
+    | 'composicion-binomial-mixture' 
     | 'unloading-team'
     | 'machine-mechanic'
   >('queue');
@@ -207,12 +215,45 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* Rechazo (si lo agregas luego, descomenta y usa tu key) */}
+            {/* Mezcla Exponencial por Composición*/}
+            <button
+              onClick={() => setSelectedProblem('composicion-exp-mixture')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'composicion-exp-mixture'
+                  ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición — Mezcla Exponencial</h4>
+                  <p className="text-sm text-gray-600">Ej 1–8: p·Exp(β1) + (1−p)·Exp(β2)</p>
+                </div>
+              </div>
+            </button>
 
+            {/* Mezcla Binomial por Composición */}
+            <button
+              onClick={() => setSelectedProblem('composicion-binomial-mixture')}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                selectedProblem === 'composicion-binomial-mixture'
+                  ? 'border-fuchsia-500 bg-fuchsia-50 text-fuchsia-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Divide className="w-6 h-6" />
+                <div className="text-left">
+                  <h4 className="font-medium">Composición — Mezcla Binomial</h4>
+                  <p className="text-sm text-gray-600">p·Bin(n,θ1) + (1−p)·Bin(n,θ2)</p>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
 
-        {/* ============ PARTE 2 ============ */}
+        {/* PARTE 2 */}
         <div>
           <div className="mb-3">
             <h4 className="text-sm font-semibold text-gray-900">Parte 2</h4>
@@ -405,7 +446,11 @@ const SimulationModule: React.FC = () => {
         <ComposicionModule />
       ) : selectedProblem === 'composicion-triangular' ? (
         <ConposicionTriangularModule />
-      ): selectedProblem === 'machine-mechanic' ? (
+      ) : selectedProblem === 'composicion-exp-mixture' ? (  
+        <ComposicionExponencialMixtureModule />
+      ) : selectedProblem === 'composicion-binomial-mixture' ? ( 
+        <ComposicionBinomialMixtureModule />
+      ) : selectedProblem === 'machine-mechanic' ? (
         <MachineMechanicModule />
       ) :   selectedProblem === 'unloading-team' ? (
         <UnloadingTeamModule />
