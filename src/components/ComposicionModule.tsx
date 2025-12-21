@@ -1,5 +1,5 @@
 // src/components/ComposicionModule.tsx
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Play, Clock, Divide } from 'lucide-react';
 import Tooltip from './Tooltip';
 import ComposicionChart from './ComposicionChart';

@@ -1,6 +1,5 @@
-
-import { useMemo, useState } from "react";
-import DataTableModal from "../simulstat_parte1/components/DataTableModal";
+import { useMemo, useState, useEffect } from "react";
+import DataTableModal from "../components/DataTableModal";
 import RejectionScatter from "../components/charts/RejectionScatter";
 import SimpleBarCompare from "../components/charts/SimpleBarCompare";
 import {
@@ -12,8 +11,29 @@ import {
 
 type Tab = "ej1" | "ej2" | "ej3" | "ej4";
 
-export default function Actividad1_1() {
-  const [tab, setTab] = useState<Tab>("ej1");
+type Props = {
+  /** Tab inicial (si no pasas nada, usa ej1 como siempre) */
+  initialTab?: Tab;
+  /**
+   * Si lo pasas, el componente renderiza SOLO ese ejercicio.
+   * Útil para incrustarlo en SimulationModule.
+   */
+  onlyTab?: Tab;
+  /** Oculta la barra de tabs (por defecto false). */
+  hideTabs?: boolean;
+};
+
+export default function Actividad1_1(props: Props) {
+  const { initialTab = "ej1", onlyTab, hideTabs = false } = props;
+
+  const [tab, setTab] = useState<Tab>(onlyTab ?? initialTab);
+
+  // Si cambia onlyTab desde afuera, sincroniza
+  useEffect(() => {
+    if (onlyTab) setTab(onlyTab);
+  }, [onlyTab]);
+
+  const showTabs = !hideTabs && !onlyTab;
 
   return (
     <div className="bg-white border rounded-lg p-6 shadow-sm">
@@ -23,24 +43,26 @@ export default function Actividad1_1() {
       </div>
 
       {/* Barra tabs */}
-      <div className="mt-4 flex gap-2 border-b">
-        {[
-          { key: "ej1", label: "Ejercicio 1" },
-          { key: "ej2", label: "Ejercicio 2" },
-          { key: "ej3", label: "Ejercicio 3" },
-          { key: "ej4", label: "Ejercicio 4" },
-        ].map((t) => (
-          <button
-            key={t.key}
-            className={`px-4 py-2 text-sm rounded-t ${
-              tab === (t.key as Tab) ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200"
-            }`}
-            onClick={() => setTab(t.key as Tab)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {showTabs && (
+        <div className="mt-4 flex gap-2 border-b">
+          {[
+            { key: "ej1", label: "Ejercicio 1" },
+            { key: "ej2", label: "Ejercicio 2" },
+            { key: "ej3", label: "Ejercicio 3" },
+            { key: "ej4", label: "Ejercicio 4" },
+          ].map((t) => (
+            <button
+              key={t.key}
+              className={`px-4 py-2 text-sm rounded-t ${
+                tab === (t.key as Tab) ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200"
+              }`}
+              onClick={() => setTab(t.key as Tab)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="mt-6">
         {tab === "ej1" && <Ej1Rechazo />}
@@ -151,23 +173,11 @@ function Ej1Rechazo() {
       )}
 
       <div className="mt-6">
-        <RejectionScatter
-          acceptedF1={acceptedF1}
-          acceptedF2={acceptedF2}
-          rejected={rejected}
-          divisorX={5}
-          xLabel="X"
-          yLabel="R2"
-        />
+        <RejectionScatter acceptedF1={acceptedF1} acceptedF2={acceptedF2} rejected={rejected} divisorX={5} xLabel="X" yLabel="R2" />
       </div>
 
       {showTable && (
-        <DataTableModal
-          title="Tabla — Ejercicio 1 (Rechazo)"
-          rows={tableRows}
-          onClose={() => setShowTable(false)}
-          fileName="ej1_rechazo.csv"
-        />
+        <DataTableModal title="Tabla — Ejercicio 1 (Rechazo)" rows={tableRows} onClose={() => setShowTable(false)} fileName="ej1_rechazo.csv" />
       )}
     </div>
   );
@@ -272,23 +282,11 @@ function Ej2Rechazo() {
       )}
 
       <div className="mt-6">
-        <RejectionScatter
-          acceptedF1={acceptedF1}
-          acceptedF2={acceptedF2}
-          rejected={rejected}
-          divisorX={1}
-          xLabel="X"
-          yLabel="R2"
-        />
+        <RejectionScatter acceptedF1={acceptedF1} acceptedF2={acceptedF2} rejected={rejected} divisorX={1} xLabel="X" yLabel="R2" />
       </div>
 
       {showTable && (
-        <DataTableModal
-          title="Tabla — Ejercicio 2 (Rechazo)"
-          rows={tableRows}
-          onClose={() => setShowTable(false)}
-          fileName="ej2_rechazo.csv"
-        />
+        <DataTableModal title="Tabla — Ejercicio 2 (Rechazo)" rows={tableRows} onClose={() => setShowTable(false)} fileName="ej2_rechazo.csv" />
       )}
     </div>
   );
@@ -332,16 +330,20 @@ function Ej3Juego711() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-        <label className="text-sm">Total partidas (p̂ ganar)
+        <label className="text-sm">
+          Total partidas (p̂ ganar)
           <input className="mt-1 w-full border rounded px-2 py-1" value={totalPartidas} onChange={(e) => setTotalPartidas(e.target.value)} />
         </label>
-        <label className="text-sm">Capital inicial
+        <label className="text-sm">
+          Capital inicial
           <input className="mt-1 w-full border rounded px-2 py-1" value={capitalInicial} onChange={(e) => setCapitalInicial(e.target.value)} />
         </label>
-        <label className="text-sm">Meta capital
+        <label className="text-sm">
+          Meta capital
           <input className="mt-1 w-full border rounded px-2 py-1" value={metaCapital} onChange={(e) => setMetaCapital(e.target.value)} />
         </label>
-        <label className="text-sm">Simulaciones (ruina)
+        <label className="text-sm">
+          Simulaciones (ruina)
           <input className="mt-1 w-full border rounded px-2 py-1" value={simulaciones} onChange={(e) => setSimulaciones(e.target.value)} />
         </label>
       </div>
@@ -419,13 +421,16 @@ function Ej4Ruleta() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
-        <label className="text-sm">Capital inicial
+        <label className="text-sm">
+          Capital inicial
           <input className="mt-1 w-full border rounded px-2 py-1" value={capitalInicial} onChange={(e) => setCapitalInicial(e.target.value)} />
         </label>
-        <label className="text-sm">Juegos por sesión
+        <label className="text-sm">
+          Juegos por sesión
           <input className="mt-1 w-full border rounded px-2 py-1" value={numJuegos} onChange={(e) => setNumJuegos(e.target.value)} />
         </label>
-        <label className="text-sm">Simulaciones
+        <label className="text-sm">
+          Simulaciones
           <input className="mt-1 w-full border rounded px-2 py-1" value={simulaciones} onChange={(e) => setSimulaciones(e.target.value)} />
         </label>
       </div>
@@ -469,12 +474,7 @@ function Ej4Ruleta() {
       )}
 
       {showTable && (
-        <DataTableModal
-          title="Tabla — Ejercicio 4 (Ruleta)"
-          rows={tableRows}
-          onClose={() => setShowTable(false)}
-          fileName="ej4_ruleta.csv"
-        />
+        <DataTableModal title="Tabla — Ejercicio 4 (Ruleta)" rows={tableRows} onClose={() => setShowTable(false)} fileName="ej4_ruleta.csv" />
       )}
     </div>
   );
