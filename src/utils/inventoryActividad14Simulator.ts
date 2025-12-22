@@ -582,8 +582,4 @@ export function runHookeJeeves(
     best: best.agg,
     table,
   };
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 05bf036373e2b91897e880d0f2661dffab58d5bc
