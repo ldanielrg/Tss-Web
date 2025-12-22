@@ -14,11 +14,16 @@ import TruckQueueSimulationModule from './TruckQueueSimulationModule';
 import TruckQueueResultsPanel from './TruckQueueResultsPanel';
 import type { TruckQueueSummary, TruckQueueParams } from '../types/truckQueueSimulation';
 
-// Inventario (q,R)
+// Inventario (q,R) (OTRO ejercicio)
 import InventorySimulationModule from './InventorySimulationModule';
 import InventoryResultsPanel from './InventoryResultsPanel';
 import type { InventorySimulationSummary } from '../types/inventorySimulation';
 //import type { InventoryA14Summary } from '../types/inventoryActividad14';
+
+// ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (P1/P2 + Tablas + Gráficas + Hooke & Jeeves)
+import InventoryActividad14SimulationModule from './InventoryActividad14SimulationModule';
+import InventoryActividad14ResultsPanel from './InventoryActividad14ResultsPanel';
+import type { InventoryA14Summary } from '../types/inventoryActividad14';
 
 // Servicios
 import ServiceSystemsModule from './ServiceSystemsModule';
@@ -68,7 +73,8 @@ const SimulationModule: React.FC = () => {
     | 'act1_1_ej4'
     | 'act1_4_p1_ej1'
     | 'act1_4_p1_ej2'
-
+    // ✅ NUEVO: Actividad 1_4 (Parte 2) Inventario (q,R) completo (P1/P2 + H&J)
+    | 'inventoryA14'
   >('queue');
 
   const [queueParams, setQueueParams] = useState({
@@ -91,8 +97,11 @@ const SimulationModule: React.FC = () => {
   const [truckSummary, setTruckSummary] = useState<TruckQueueSummary | null>(null);
   const [truckParams, setTruckParams] = useState<TruckQueueParams | null>(null);
 
-  // Inventario (q,R)
+  // Inventario (q,R) (OTRO ejercicio)
   const [inventorySummary, setInventorySummary] = useState<InventorySimulationSummary | null>(null);
+
+  // ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (P1/P2 + H&J)
+  const [inventoryA14Summary, setInventoryA14Summary] = useState<InventoryA14Summary | null>(null);
 
   const runQueueSimulation = () => {
     setIsSimulating(true);
@@ -338,7 +347,6 @@ const SimulationModule: React.FC = () => {
                 </div>
               </div>
             </button>
-            
           </div>
         </div>
 
@@ -367,7 +375,7 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* Inventario (q,R) */}
+            {/* Inventario (q,R) (OTRO ejercicio que ya tenías) */}
             <button
               onClick={() => setSelectedProblem('inventoryRQ')}
               className={`p-4 rounded-lg border-2 transition-colors ${
@@ -385,20 +393,20 @@ const SimulationModule: React.FC = () => {
               </div>
             </button>
 
-            {/* Actividad 1_4 */}
+            {/* ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (Implementación completa) */}
             <button
-              onClick={() => setSelectedProblem('inventory-actividad14')}
+              onClick={() => setSelectedProblem('inventoryA14')}
               className={`p-4 rounded-lg border-2 transition-colors ${
-                selectedProblem === 'inventory-actividad14'
-                  ? 'border-amber-500 bg-amber-50 text-amber-700'
+                selectedProblem === 'inventoryA14'
+                  ? 'border-amber-600 bg-amber-50 text-amber-800'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               <div className="flex items-center space-x-3">
                 <Package className="w-6 h-6" />
                 <div className="text-left">
-                  <h4 className="font-medium">Inventario (q, R) — Actividad 1_4</h4>
-                  <p className="text-sm text-gray-600">P1 (Backorder) + P2 (Espera + pérdidas)</p>
+                  <h4 className="font-medium">Inventario (q, R) — Act. 1_4</h4>
+                  <p className="text-sm text-gray-600">P1/P2 + Tablas + Gráficas + Hooke & Jeeves</p>
                 </div>
               </div>
             </button>
@@ -858,12 +866,21 @@ const SimulationModule: React.FC = () => {
               />
             )}
 
-            {/* Inventario (q,R) */}
+            {/* Inventario (q,R) (OTRO ejercicio) */}
             {selectedProblem === 'inventoryRQ' && (
               <InventorySimulationModule
                 isSimulating={isSimulating}
                 setIsSimulating={setIsSimulating}
                 onSimulated={(summary) => setInventorySummary(summary)}
+              />
+            )}
+
+            {/* ✅ NUEVO: Inventario Actividad 1_4 Parte 2 (Implementación completa) */}
+            {selectedProblem === 'inventoryA14' && (
+              <InventoryActividad14SimulationModule
+                isSimulating={isSimulating}
+                setIsSimulating={setIsSimulating}
+                onSimulated={(summary) => setInventoryA14Summary(summary)}
               />
             )}
           </div>
@@ -875,67 +892,79 @@ const SimulationModule: React.FC = () => {
               <TruckQueueResultsPanel summary={truckSummary} isSimulating={isSimulating} params={truckParams} />
             )}
 
-            {/* Resultados Inventario (q,R) */}
+            {/* Resultados Inventario (q,R) (OTRO ejercicio) */}
             {selectedProblem === 'inventoryRQ' && (
               <InventoryResultsPanel summary={inventorySummary} isSimulating={isSimulating} />
             )}
 
+            {/* ✅ NUEVO: Resultados Inventario Actividad 1_4 Parte 2 */}
+            {selectedProblem === 'inventoryA14' && (
+              <InventoryActividad14ResultsPanel summary={inventoryA14Summary} isSimulating={isSimulating} />
+            )}
+
             {/* Resultados generales (queue/inventory básico) */}
-            {selectedProblem !== 'camiones' && selectedProblem !== 'inventoryRQ' && results.length > 0 && (
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                  <BarChart className="w-5 h-5 text-purple-600" />
-                  <span>Cronograma de Eventos</span>
-                </h3>
+            {selectedProblem !== 'camiones' &&
+              selectedProblem !== 'inventoryRQ' &&
+              selectedProblem !== 'inventoryA14' &&
+              results.length > 0 && (
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+                    <BarChart className="w-5 h-5 text-purple-600" />
+                    <span>Cronograma de Eventos</span>
+                  </h3>
 
-                <div className="max-h-96 overflow-y-auto">
-                  <div className="space-y-2">
-                    {results.slice(0, 20).map((event, index) => (
-                      <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-8 bg-purple-100 text-purple-700 rounded text-sm font-mono flex items-center justify-center">
-                            {event.time}
+                  <div className="max-h-96 overflow-y-auto">
+                    <div className="space-y-2">
+                      {results.slice(0, 20).map((event, index) => (
+                        <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-8 bg-purple-100 text-purple-700 rounded text-sm font-mono flex items-center justify-center">
+                              {event.time}
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <span
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  event.type === 'Llegada' || event.type === 'Demanda'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : event.type === 'Salida'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-orange-100 text-orange-800'
+                                }`}
+                              >
+                                {event.type}
+                              </span>
+                              <span className="text-sm text-gray-700">{event.description}</span>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">Estado: {JSON.stringify(event.systemState)}</div>
                           </div>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-medium ${
-                                event.type === 'Llegada' || event.type === 'Demanda'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : event.type === 'Salida'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-orange-100 text-orange-800'
-                              }`}
-                            >
-                              {event.type}
-                            </span>
-                            <span className="text-sm text-gray-700">{event.description}</span>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">Estado: {JSON.stringify(event.systemState)}</div>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {results.length > 20 && (
-                  <div className="mt-4 text-center text-sm text-gray-500">
-                    Mostrando los primeros 20 eventos de {results.length} total
+                  {results.length > 20 && (
+                    <div className="mt-4 text-center text-sm text-gray-500">
+                      Mostrando los primeros 20 eventos de {results.length} total
+                    </div>
+                  )}
+                </div>
+              )}
+
+            {selectedProblem !== 'camiones' &&
+              selectedProblem !== 'inventoryRQ' &&
+              selectedProblem !== 'inventoryA14' &&
+              results.length === 0 &&
+              !isSimulating && (
+                <div className="bg-white p-12 rounded-lg shadow-md text-center">
+                  <div className="text-gray-400 mb-4">
+                    <Clock className="w-16 h-16 mx-auto" />
                   </div>
-                )}
-              </div>
-            )}
-
-            {selectedProblem !== 'camiones' && selectedProblem !== 'inventoryRQ' && results.length === 0 && !isSimulating && (
-              <div className="bg-white p-12 rounded-lg shadow-md text-center">
-                <div className="text-gray-400 mb-4">
-                  <Clock className="w-16 h-16 mx-auto" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Sin Simulación</h3>
+                  <p className="text-gray-600">Configura los parámetros y ejecuta una simulación para ver los resultados.</p>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Sin Simulación</h3>
-                <p className="text-gray-600">Configura los parámetros y ejecuta una simulación para ver los resultados.</p>
-              </div>
-            )}
+              )}
           </div>
         </div>
       )}
