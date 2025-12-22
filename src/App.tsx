@@ -19,7 +19,7 @@ import Actividad1_1 from './pages/Actividad1-1.tsx';
 const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />}>
           <Route path="/inverse-transform" element={<InverseTransform />} />
